@@ -4,4 +4,13 @@
   <artifactId>vbus</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>RESOL VBus</name>
+
+  <dependencies>
+	<dependency>
+		<groupId>commons-codec</groupId>
+		<artifactId>commons-codec</artifactId>
+		<version>1.4</version>
+		<scope>test</scope>
+	</dependency>
+  </dependencies>
 </project>
