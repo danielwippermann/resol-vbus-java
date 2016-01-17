@@ -151,7 +151,7 @@ public class PacketTest {
 
 		// fail on missing sync byte in header
 		refBuffer1 [refStart1] = (byte) 0xBB;
-		assertEquals(null, Packet.fromLiveBuffer(refBuffer1, refStart1, refBuffer1.length - 1, 0, 0));
+		assertEquals(null, Packet.fromLiveBuffer(refBuffer1, refStart1, refBuffer1.length - refStart1, 0, 0));
 		refBuffer1 [refStart1] = (byte) 0xAA;
 
 		// fail on MSB in frames
