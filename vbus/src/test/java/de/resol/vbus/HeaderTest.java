@@ -32,7 +32,7 @@ import org.junit.Test;
 
 public class HeaderTest {
 
-	private class TestableHeader extends Header {
+	protected static class TestableHeader extends Header {
 	
 		private int protocolVersion;
 
