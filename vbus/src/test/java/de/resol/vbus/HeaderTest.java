@@ -50,8 +50,9 @@ public class HeaderTest {
 		}
 		
 		@Override
-		public byte[] toLiveBuffer() {
-			return null;
+		public byte[] toLiveBuffer(byte[] buffer, int start, int length) {
+			// NOTE(daniel): empty stub
+			return buffer;
 		}
 		
 	}

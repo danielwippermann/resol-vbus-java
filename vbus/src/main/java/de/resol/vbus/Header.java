@@ -58,7 +58,7 @@ public abstract class Header implements Comparable<Header>{
 
 	public abstract int getProtocolVersion();
 	
-	public abstract byte[] toLiveBuffer();
+	public abstract byte[] toLiveBuffer(byte[] buffer, int start, int length);
 	
 	public int getInfo() {
 		return 0;
