@@ -117,7 +117,14 @@ public class HeaderTest {
 		// protocolVersion
 		assertTrue(0 < header1.compareTo(new TestableHeader(0, 0x13, 0x2336, 0x3334, 0x00)));
 		assertTrue(0 > header1.compareTo(new TestableHeader(0, 0x13, 0x2336, 0x3334, 0x7F)));
-}
+	}
+	
+	@Test
+	public void testCheckMsbs() throws Exception {
+		byte[] testBuffer1 = Hex.decodeHex("0123456789".toCharArray());
+		assertEquals(true, Header.checkMsbs(testBuffer1, 0, testBuffer1.length - 1));
+		assertEquals(false, Header.checkMsbs(testBuffer1, 0, testBuffer1.length));
+	}
 
 	@Test
 	public void testCalcChecksumV0() throws Exception {

@@ -82,6 +82,17 @@ public abstract class Header implements Comparable<Header>{
 		return result;
 	}
 
+	public static boolean checkMsbs(byte[] buffer, int start, int length) {
+		boolean valid = true;
+		for (int i = 0; i < length; i++) {
+			if ((buffer [start + i] & 0x80) != 0) {
+				valid = false;
+				break;
+			}
+		}
+		return valid;
+	}
+	
 	public static byte calcChecksumV0(byte[] buffer, int start, int length) {
 		byte checksum = 0;
 		for (int i = 0; i < length; i++) {
