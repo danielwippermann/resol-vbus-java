@@ -61,7 +61,7 @@ public class HeaderSetTest {
 	public void testAddListener() throws Exception {
 		HeaderSetListener<Packet> testListener1 = new HeaderSetListener<Packet>() {
 			
-			public void onHeaderAdded(HeaderSet<Packet> headerSet, Packet header) {
+			public void headerAdded(HeaderSet<Packet> headerSet, Packet header) {
 			}
 
 		};
@@ -79,7 +79,7 @@ public class HeaderSetTest {
 	public void testRemoveListener() throws Exception {
 		HeaderSetListener<Packet> testListener1 = new HeaderSetListener<Packet>() {
 			
-			public void onHeaderAdded(HeaderSet<Packet> headerSet, Packet header) {
+			public void headerAdded(HeaderSet<Packet> headerSet, Packet header) {
 			}
 
 		};
@@ -141,7 +141,7 @@ public class HeaderSetTest {
 
 		HeaderSetListener<Packet> testListener1 = new HeaderSetListener<Packet>() {
 			
-			public void onHeaderAdded(HeaderSet<Packet> headerSet, Packet packet) {
+			public void headerAdded(HeaderSet<Packet> headerSet, Packet packet) {
 				assertEquals(testHeaderSet1, headerSet);
 				listenerCallCount [0]++;
 				listenerPacket [0] = packet;

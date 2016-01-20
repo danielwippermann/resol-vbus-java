@@ -104,7 +104,7 @@ public class HeaderSet<T extends Header> {
 		}
 		
 		for (HeaderSetListener<T> listener : listeners) {
-			listener.onHeaderAdded(this, header);
+			listener.headerAdded(this, header);
 		}
 	}
 	

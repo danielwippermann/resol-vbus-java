@@ -25,6 +25,6 @@ package de.resol.vbus;
 
 public interface HeaderSetListener<T extends Header> {
 
-	void onHeaderAdded(HeaderSet<T> headerSet, T header);
+	void headerAdded(HeaderSet<T> headerSet, T header);
 	
 }

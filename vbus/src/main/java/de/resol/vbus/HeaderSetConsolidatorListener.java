@@ -25,6 +25,6 @@ package de.resol.vbus;
 
 public interface HeaderSetConsolidatorListener<T extends Header> extends HeaderSetListener<T> {
 
-	void onHeaderSetProcessed(HeaderSetConsolidator<T> hsc);
+	void headerSetProcessed(HeaderSetConsolidator<T> hsc);
 
 }

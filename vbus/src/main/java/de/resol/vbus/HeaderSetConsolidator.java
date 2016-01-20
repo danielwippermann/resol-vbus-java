@@ -122,7 +122,7 @@ public class HeaderSetConsolidator<T extends Header> extends HeaderSet<T> {
 			for (HeaderSetListener<T> listener : listeners) {
 				if (listener instanceof HeaderSetConsolidatorListener<?>) {
 					HeaderSetConsolidatorListener<T> hscListener = (HeaderSetConsolidatorListener<T>) listener;
-					hscListener.onHeaderSetProcessed(this);
+					hscListener.headerSetProcessed(this);
 				}
 			}
 			

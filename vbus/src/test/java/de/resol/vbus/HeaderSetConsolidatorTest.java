@@ -54,10 +54,10 @@ public class HeaderSetConsolidatorTest {
 
 		HeaderSetConsolidatorListener<Packet> testListener1 = new HeaderSetConsolidatorListener<Packet>() {
 			
-			public void onHeaderAdded(HeaderSet<Packet> headerSet, Packet header) {
+			public void headerAdded(HeaderSet<Packet> headerSet, Packet header) {
 			}
 			
-			public void onHeaderSetProcessed(HeaderSetConsolidator<Packet> hsc) {
+			public void headerSetProcessed(HeaderSetConsolidator<Packet> hsc) {
 				assertEquals(testHsc1, hsc);
 				testListenerCallCount [0]++;
 			}
@@ -93,10 +93,10 @@ public class HeaderSetConsolidatorTest {
 
 		HeaderSetConsolidatorListener<Packet> testListener1 = new HeaderSetConsolidatorListener<Packet>() {
 			
-			public void onHeaderAdded(HeaderSet<Packet> headerSet, Packet header) {
+			public void headerAdded(HeaderSet<Packet> headerSet, Packet header) {
 			}
 			
-			public void onHeaderSetProcessed(HeaderSetConsolidator<Packet> hsc) {
+			public void headerSetProcessed(HeaderSetConsolidator<Packet> hsc) {
 				assertEquals(testHsc1, hsc);
 				testListenerCallCount [0]++;
 			}
@@ -105,7 +105,7 @@ public class HeaderSetConsolidatorTest {
 		
 		HeaderSetListener<Packet> testListener2 = new HeaderSetListener<Packet>() {
 			
-			public void onHeaderAdded(HeaderSet<Packet> headerSet, Packet header) {
+			public void headerAdded(HeaderSet<Packet> headerSet, Packet header) {
 			}
 
 		};
