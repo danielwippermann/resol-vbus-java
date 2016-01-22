@@ -466,4 +466,39 @@ public class TcpConnectionTest {
 		endpoint.teardown();
 	}
 
+	@Test
+	public void testSend() throws Exception {
+		Endpoint endpoint = new Endpoint();
+
+		endpoint.setup();
+		
+		Datagram refDatagram1 = new Datagram(0, 0, 0, 0, 0, 0, 0);
+		
+		final TcpConnection testConnection3 = new TcpConnection(0x0020, endpoint.serverSocket.getLocalSocketAddress(), "via", "password", 1);
+		
+		final int[] listenerCallCount3 = new int [1];
+		
+		ConnectionListener refListener3 = new ConnectionAdapter() {
+			
+			public void connectionStateChanged(Connection connection) {
+				assertEquals(testConnection3, connection);
+				listenerCallCount3 [0]++;
+			}
+			
+		};
+		
+		testConnection3.addListener(refListener3);
+		
+		testConnection3.send(refDatagram1);
+		
+		testConnection3.connect();
+		
+		assertEquals(2, listenerCallCount3 [0]);
+		assertEquals(ConnectionState.CONNECTED, testConnection3.getConnectionState());
+
+		testConnection3.send(refDatagram1);
+		
+		endpoint.teardown();
+	}
+
 }
