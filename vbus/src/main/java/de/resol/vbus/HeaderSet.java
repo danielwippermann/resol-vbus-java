@@ -32,6 +32,11 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.ListIterator;
 
+/**
+ * A `HeaderSet` works like a `java.util.Set<Header>` with some extra methods.
+ * If a `Header` object is added to a `HeaderSet` an older version of the `Header`
+ * is removed before the new one is added. 
+ */
 public class HeaderSet<T extends Header> {
 
 	protected long timestamp;
@@ -39,13 +44,25 @@ public class HeaderSet<T extends Header> {
 	protected ArrayList<T> headerList;
 	
 	protected ArrayList<HeaderSetListener<T>> listeners;
-	
+
+	/**
+	 * Creates an empty `HeaderSet`, initializing the timestamp to the given value.
+	 * 
+	 * @param timestamp Timestamp of this header set, in milliseconds since UNIX epoch.
+	 */
 	public HeaderSet(long timestamp) {
 		this.timestamp = timestamp;
 		this.headerList = new ArrayList<T>();
 		listeners = new ArrayList<HeaderSetListener<T>>();
 	}
-	
+
+	/**
+	 * Creates a `HeaderSet` instance, populating it with the `Header`
+	 *  instances given and setting its timestamp.
+	 * 
+	 * @param timestamp Timestamp of this header set, in milliseconds since UNIX epoch.
+	 * @param headers `Header` instances to add to the header set.
+	 */
 	public HeaderSet(long timestamp, T... headers) {
 		this(timestamp);
 		
@@ -57,6 +74,13 @@ public class HeaderSet<T extends Header> {
 		this.timestamp = timestamp;
 	}
 	
+	/**
+	 * Creates a `HeaderSet` instance, populating it with the `Header`
+	 * instances returned by the given iterator and setting its timestamp.
+	 * 
+	 * @param timestamp Timestamp of this header set, in milliseconds since UNIX epoch.
+	 * @param headers Iterator of `Header` objects to add to this header set.
+	 */
 	public HeaderSet(long timestamp, Iterator<T> headers) {
 		this(timestamp);
 				
@@ -68,10 +92,20 @@ public class HeaderSet<T extends Header> {
 		this.timestamp = timestamp;
 	}
 	
+	/**
+	 * Add a listener that fired every time a `Header` is added to this header set.
+	 * 
+	 * @param listener Listener
+	 */
 	public void addListener(HeaderSetListener<T> listener) {
 		listeners.add(listener);
 	}
 	
+	/**
+	 * Remove a previously added listener.
+	 * 
+	 * @param listener Listener
+	 */
 	public void removeListener(HeaderSetListener<T> listener) {
 		listeners.remove(listener);
 	}
@@ -87,10 +121,21 @@ public class HeaderSet<T extends Header> {
 		return result;
 	}
 	
+	/**
+	 * Checks whether the header set contains a `Header` like the one given.
+	 * 
+	 * @param header The `Header` to search for.
+	 * @return `true` if a `Header` like the one given was found, `false` otherwise.
+	 */
 	public boolean containsHeader(T header) {
 		return (findIndex(header) >= 0);
 	}
 	
+	/**
+	 * Add a `Header` instance to this header set.
+	 * 
+	 * @param header Header to add to this header set.
+	 */
 	public void addHeader(T header) {
 		int index = findIndex(header);
 		if (index >= 0) {
@@ -108,6 +153,11 @@ public class HeaderSet<T extends Header> {
 		}
 	}
 	
+	/**
+	 * Add multiple `Header` instances to this header set.
+	 * 
+	 * @param headers `Header` instances to add to this header set.
+	 */
 	public void addHeaders(T... headers) {
 		for (T header : headers) {
 			addHeader(header);
@@ -118,12 +168,20 @@ public class HeaderSet<T extends Header> {
 		headerList.remove(index);
 	}
 
+	/**
+	 * Remove all `Header` instances from this header set.
+	 */
 	public void removeAllHeaders() {
 		while (headerList.size() > 0) {
 			removeHeader(headerList.size() - 1);
 		}
 	}
 	
+	/**
+	 * Remove all `Header` instances from this header set that are older than the given timestamp.
+	 * 
+	 * @param timestamp Timestamp to check `Header` instances against.
+	 */
 	public void removeHeadersOlderThan(long timestamp) {
 		int index = headerList.size() - 1;
 		while (index >= 0) {
@@ -134,14 +192,30 @@ public class HeaderSet<T extends Header> {
 		}
 	}
 
+	/**
+	 * Get number of unique `Header` instances in this header set.
+	 * 
+	 * @return Number of unique `Header` instances in this header set.
+	 */
 	public int getHeaderCount() {
 		return headerList.size();
 	}
 	
+	/**
+	 * Get iterator for all unique `Header` instances in this header set.
+	 * 
+	 * @return Iterator for all unique `Header` instances in this header set.
+	 */
 	public Iterator<T> getHeaderIterator() {
 		return headerList.iterator();
 	}
 	
+	/**
+	 * Populate array with all unique `Header` instances in this header set.
+	 * 
+	 * @param array Array to populate.
+	 * @return Populated array.
+	 */
 	public T[] getHeaders(T[] array) {
 		return headerList.toArray(array);
 	}
@@ -158,19 +232,44 @@ public class HeaderSet<T extends Header> {
 		return sortedHeaderList;
 	}
 	
+	/**
+	 * Get list iterator for sorted list of all unique `Header` instances in this header set.
+	 * 
+	 * @return List iterator for sorted list of all unique `Header` instances in this header set.
+	 */
 	public ListIterator<T> getSortedHeaderListIterator() {
 		return getSortedHeaderList().listIterator();
 	}
 	
+	/**
+	 * Populate array with sorted list of all unique `Header` instances in this header set.
+	 * 
+	 * @param array Array to populate.
+	 * @return Populated array.
+	 */
 	public T[] getSortedHeaders(T[] array) {
 		return getSortedHeaderList().toArray(array);
 	}
 
+	/**
+	 * Get `HeaderSet` instance that contains a sorted list of all unique `Header` instances in this header set.
+	 * 
+	 * @return `HeaderSet` instance that contains a sorted list of all unique `Header` instances in this header set.
+	 */
 	public HeaderSet<T> getSortedHeaderSet() {
 		ArrayList<T> sortedHeaderList = getSortedHeaderList();
 		return new HeaderSet<T>(timestamp, sortedHeaderList.listIterator());
 	}
 
+	/**
+	 * Get the ID of this header set.
+	 * 
+	 * A sorted list of the unique `Header` instances in this header set is
+	 * created and the IDs of those `Header` instances are joined by a comma
+	 * to form a unqiue ID for this header set.
+	 * 
+	 * @return ID of this header set.
+	 */
 	public String getId() {
 		ArrayList<T> sortedHeaderList = getSortedHeaderList();
 		StringBuilder sb = new StringBuilder();
@@ -183,6 +282,13 @@ public class HeaderSet<T extends Header> {
 		return sb.toString();
 	}
 	
+	/**
+	 * Get the ID hash of this header set.
+	 * 
+	 * The ID hash is a SHA-256 digest of the ID of the header set.
+	 * 
+	 * @return ID hash of this header set.
+	 */
 	public String getIdHash() {
 		try {
 			String id = getId();
