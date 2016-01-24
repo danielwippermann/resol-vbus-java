@@ -39,6 +39,12 @@ public class SpecificationTest {
 	public void testTypeClass() throws Exception {
 		Type testType1 = new Type("TestType") {
 			
+			@Override
+			protected String formatTextValue(double rawValue, Locale locale, int precision) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
 		};
 		
 		assertEquals("TestType", testType1.getTypeId());

@@ -31,10 +31,33 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.TimeZone;
 
+/**
+ * The `Specification` class helps with decoding the payload frame data of
+ * known VBus protocol version 1.0 packets. The structure of the payload
+ * depends on the destination and source addresses as well as the
+ * command in the header part of the `Packet`.
+ * 
+ * Although the `Specification` class offers several nested classes and
+ * helper functions to decode the payload, it does not know any specific
+ * payload structures by itself. The application developer has two
+ * possibilities:
+ * 
+ * - Use the auto-generated payload structure information in the
+ *   `SpecificationData` class by calling
+ *   `Specification.getDefaultSpecification`, or
+ * - Create its own set of `DeviceSpec` and `PacketSpec` array and
+ *   provide them to the constructor of the `Specification` class.
+ */
 public class Specification {
 
 	private static Specification defaultSpecification = null;
 	
+	/**
+	 * Get the default specification data bundled with the library.
+	 * 
+	 * @return `Specification` instance containing all known device and
+	 * packet specifications.
+	 */
 	public static synchronized Specification getDefaultSpecification() {
 		if (defaultSpecification == null) {
 			defaultSpecification = SpecificationData.createDefaultSpecification();
@@ -42,6 +65,21 @@ public class Specification {
 		return defaultSpecification;
 	}
 
+	private static DateFormat createUtcDateFormat(String format) {
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+		return sdf;
+	}
+	
+	/**
+	 * The `Type` class helps formatting raw values into readable text.
+	 * The library supports four different `Type` instances out-of-the-box:
+	 * 
+	 * - `Type.Number`
+	 * - `Type.Time`
+	 * - `Type.Weektime`
+	 * - `Type.DateTime`
+	 */
 	public static abstract class Type {
 		
 		private String typeId;
@@ -54,26 +92,77 @@ public class Specification {
 			return typeId;
 		}
 		
-//		protected abstract String formatRawValue();
+		protected abstract String formatTextValue(double rawValue, Locale locale, int precision);
 		
-		public static final Type DateTime = new Type("DateTime") {
-			
-		};
-		
+		private static final DateFormat TIME_FORMATTER = createUtcDateFormat("HH:mm"); 
+		private static final DateFormat WEEKTIME_FORMATTER = createUtcDateFormat("EEE,HH:mm"); 
+		private static final DateFormat DATETIME_FORMATTER = createUtcDateFormat("yyyy-MM-dd HH:mm:ss");
+
 		public static final Type Number = new Type("Number") {
+			
+			@Override
+			protected String formatTextValue(double rawValue, Locale locale, int precision) {
+				String textValue;
+				if (precision == 0) {
+					textValue = String.format(locale, "%.0f", rawValue);
+				} else if (precision == 1) {
+					textValue = String.format(locale, "%.1f", rawValue);
+				} else if (precision == 2) {
+					textValue = String.format(locale, "%.2f", rawValue);
+				} else if (precision == 3) {
+					textValue = String.format(locale, "%.3f", rawValue);
+				} else if (precision == 4) {
+					textValue = String.format(locale, "%.4f", rawValue);
+				} else {
+					String format = String.format(locale, "%%.%df", precision);
+					textValue = String.format(locale, format, rawValue);
+				}
+				return textValue;
+			}
 			
 		};
 		
 		public static final Type Time = new Type("Time") {
 			
+			@Override
+			protected String formatTextValue(double rawValue, Locale locale, int precision) {
+				String textValue;
+				textValue = TIME_FORMATTER.format(new Date(Math.round(rawValue) * 60000));
+				return textValue;
+			}
+
 		};
 		
 		public static final Type Weektime = new Type("Weektime") {
 			
+			@Override
+			protected String formatTextValue(double rawValue, Locale locale, int precision) {
+				String textValue;
+				textValue = WEEKTIME_FORMATTER.format(new Date(Math.round(rawValue + 5760) * 60000));
+				return textValue;
+			}
+
 		};
 
+		public static final Type DateTime = new Type("DateTime") {
+
+			@Override
+			protected String formatTextValue(double rawValue, Locale locale, int precision) {
+				String textValue;
+				textValue = DATETIME_FORMATTER.format(new Date(Math.round(rawValue + 978307200) * 1000));
+				return textValue;
+			}
+
+		};
+		
 	}
 	
+	/**
+	 * The `Unit` class expresses a physical unit including its optional
+	 * membership in a unit family.
+	 * 
+	 * Several `Unit` constants are provided by the library out-of-the-box.
+	 */
 	public static class Unit {
 		
 		 public static final Unit Bars = new Unit("Bars", "Pressure", " bar");
@@ -138,6 +227,10 @@ public class Specification {
 		
 	}
 	
+	/**
+	 * Instances of the `Text` class can be used for a minimalistic support
+	 * for internationalization (I18N) of field names. 
+	 */
 	public static class Text {
 		
 		private String lang;
@@ -161,6 +254,14 @@ public class Specification {
 			return text;
 		}
 		
+		/**
+		 * Get the text from a list of possible translations that matches the
+		 * given language best.
+		 * 
+		 * @param texts Array of `Text` instances to search in.
+		 * @param lang Language to search for.
+		 * @return Text that matched best or `null` if no text was found.
+		 */
 		public static String getLocalizedText(Text[] texts, String lang) {
 			String result = null;
 			int priority = 0;
@@ -185,6 +286,10 @@ public class Specification {
 
 	}
 	
+	/**
+	 * The `DeviceSpec` class combines all information about a device given
+	 * its own address and the address of its optional peer device.
+	 */
 	public static class DeviceSpec {
 		
 		private int channel;
@@ -238,6 +343,12 @@ public class Specification {
 		
 	}
 	
+	/**
+	 * Since the raw value that belongs to a `PacketFieldSpec` can be
+	 * distributed over any number of bytes within the payload data, each
+	 * of the `PacketFieldPartSpec` instances contains information about
+	 * one of these byte positions.
+	 */
 	public static class PacketFieldPartSpec {
 	
 		private int offset;
@@ -280,6 +391,11 @@ public class Specification {
 		
 	}
 	
+	/**
+	 * Instances of the `PacketFieldType` class combine the information of a
+	 * `Type` (e.g. `Type.Number`) with a displaying precision and a physical
+	 * unit.
+	 */
 	public static class PacketFieldType {
 		
 		private Type type;
@@ -308,6 +424,11 @@ public class Specification {
 		
 	}
 	
+	/**
+	 * The `PacketFieldSpec` class contains all information about a single
+	 * data point contained in the payload frame data of a `Packet` VBus
+	 * model.
+	 */
 	public static class PacketFieldSpec {
 	
 		private String fieldId;
@@ -354,6 +475,10 @@ public class Specification {
 		
 	}
 	
+	/**
+	 * The `PacketSpec` class contains all information about the data points
+	 * that are contained in a VBus `Packet` model.
+	 */
 	public static class PacketSpec {
 		
 		private int channel;
@@ -410,6 +535,14 @@ public class Specification {
 
 	}
 	
+	/**
+	 * Instances of the `PacketFieldValue` class join information about the
+	 * VBus `Packet` model instance described by a `PacketSpec` instance
+	 * that in turn contains a data point described by a `PacketFieldSpec`.
+	 * 
+	 * The `PacketFieldValue` instance can be used to query both the raw
+	 * value and its formatted textual representation and name.
+	 */
 	public class PacketFieldValue {
 		
 		private Packet packet;
@@ -467,6 +600,12 @@ public class Specification {
 
 	private HashMap<String, PacketSpec> packetSpecById;
 	
+	/**
+	 * Creates a `Specification` instances, initializing its members to the given values.
+	 * 
+	 * @param deviceSpecTemplates Array of `DeviceSpec` instances describing known device templates.
+	 * @param packetSpecTemplates Array of `PacketSpec` instances describing known packet templates.
+	 */
 	public Specification(DeviceSpec[] deviceSpecTemplates, PacketSpec[] packetSpecTemplates) {
 		this.deviceSpecTemplates = deviceSpecTemplates;
 		this.packetSpecTemplates = packetSpecTemplates;
@@ -474,14 +613,32 @@ public class Specification {
 		packetSpecById = new HashMap<String, Specification.PacketSpec>();
 	}
 	
+	/**
+	 * Get the array of `DeviceSpec` templates.
+	 * 
+	 * @return Array of `DeviceSpec` templates.
+	 */
 	public DeviceSpec[] getDeviceSpecTemplates() {
 		return deviceSpecTemplates;
 	}
 	
+	/**
+	 * Get the array of `PacketSpec` templates.
+	 * 
+	 * @return Array of `PacketSpec` templates.
+	 */
 	public PacketSpec[] getPacketSpecTemplates() {
 		return packetSpecTemplates;
 	}
 	
+	/**
+	 * Get a `DeviceSpec` instance for the given VBus channel and addresses.
+	 * 
+	 * @param channel VBus channel.
+	 * @param selfAddress VBus address of the device itself.
+	 * @param peerAddress VBus address of its peer device.
+	 * @return `DeviceSpec` instance.
+	 */
 	public DeviceSpec getDeviceSpec(int channel, int selfAddress, int peerAddress) {
 		String id = String.format("%02X_%04X_%04X", channel, selfAddress, peerAddress);
 		DeviceSpec deviceSpec;
@@ -505,6 +662,9 @@ public class Specification {
 				}
 			}
 			
+			// FIXME(daniel): Create "unknown device" stub if no device found
+			// FIXME(daniel): Replace text pattern "#" with sub address
+			
 			deviceSpec = new DeviceSpec(channel, selfAddress, 0xFFFF, peerAddress, 0xFFFF, nameTexts);
 			deviceSpecById.put(id, deviceSpec);
 		} else {
@@ -513,14 +673,35 @@ public class Specification {
 		return deviceSpec;
 	}
 	
+	/**
+	 * Get a `DeviceSpec` instance for the source device of a given `Header`.
+	 * 
+	 * @param header `Header` instance to get source `DeviceSpec` for.
+	 * @return `DeviceSpec`instance.
+	 */
 	public DeviceSpec getSourceDeviceSpec(Header header) {
 		return getDeviceSpec(header.getChannel(), header.getSourceAddress(), header.getDestinationAddress());
 	}
 	
+	/**
+	 * Get a `DeviceSpec` instance for the destination device of a given `Header`.
+	 * 
+	 * @param header `Header` instance to get destination `DeviceSpec` for.
+	 * @return `DeviceSpec`instance.
+	 */
 	public DeviceSpec getDestinationDeviceSpec(Header header) {
 		return getDeviceSpec(header.getChannel(), header.getDestinationAddress(), header.getSourceAddress());
 	}
 
+	/**
+	 * Get a `PacketSpec` instance for the given information.
+	 * 
+	 * @param channel VBus channel.
+	 * @param destinationAddress VBus destination address.
+	 * @param sourceAddress VBus source address.
+	 * @param command VBus command.
+	 * @return `PacketSpec` instance or `null` if packet structure is unknown.
+	 */
 	public PacketSpec getPacketSpec(int channel, int destinationAddress, int sourceAddress, int command) {
 		String id = String.format("%02X_%04X_%04X_10_%04X", channel, destinationAddress, sourceAddress, command);
 		PacketSpec packetSpec;
@@ -544,6 +725,8 @@ public class Specification {
 				}
 			}
 			
+			// FIXME(daniel): do not create PacketSpec if no template was found
+
 			packetSpec = new PacketSpec(channel, destinationAddress, 0xFFFF, sourceAddress, 0xFFFF, command, fieldSpecs);
 			packetSpecById.put(id,  packetSpec);
 		} else {
@@ -552,10 +735,23 @@ public class Specification {
 		return packetSpec;
 	}
 	
+	/**
+	 * Get a `PacketSpec` instance for the given `Packet`.
+	 * 
+	 * @param packet `Packet` instance to get `PacketSpec` for.
+	 * @return `PacketSpec`instance or `null` if packet structure is unknown.
+	 */
 	public PacketSpec getPacketSpec(Packet packet) {
 		return getPacketSpec(packet.getChannel(), packet.getDestinationAddress(), packet.getSourceAddress(), packet.getCommand());
 	}
 	
+	/**
+	 * Get a `PacketFieldSpec` instance for a given set of `PacketSpec` and field ID.
+	 * 
+	 * @param packetSpec `PacketSpec` instance to search `PacketFieldSpec` in.
+	 * @param fieldId Field ID to search.
+	 * @return `PacketFieldSpec` instance or `null` if field ID does not exist.
+	 */
 	public PacketFieldSpec getPacketFieldSpec(PacketSpec packetSpec, String fieldId) {
 		PacketFieldSpec result = null;
 		
@@ -569,6 +765,15 @@ public class Specification {
 		return result;
 	}
 	
+	/**
+	 * Get optional raw value from `Packet` payload data.
+	 * 
+	 * @param pfs `PacketFieldSpec` instance of field to get value for.
+	 * @param buffer Byte array containing `Packet` payload data.
+	 * @param start Start index into the buffer.
+	 * @param length Length of the buffer.
+	 * @return The boxed raw value or `null` if the buffer was too small for a value. 
+	 */
 	public Double getRawValue(PacketFieldSpec pfs, byte[] buffer, int start, int length) {
 		long rawValue = 0;
 		int partCount = 0;
@@ -587,16 +792,6 @@ public class Specification {
 		return (partCount > 0) ? new Double(rawValue * pfs.factor) : null;
 	}
 
-	private static DateFormat createUtcDateFormat(String format) {
-		SimpleDateFormat sdf = new SimpleDateFormat(format);
-		sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-		return sdf;
-	}
-	
-	private static final DateFormat TIME_FORMATTER = createUtcDateFormat("HH:mm"); 
-	private static final DateFormat WEEKTIME_FORMATTER = createUtcDateFormat("EEE,HH:mm"); 
-	private static final DateFormat DATETIME_FORMATTER = createUtcDateFormat("yyyy-MM-dd HH:mm:ss");
-
 	protected String formatTextValueFromRawValueInternal(double rawValue, Unit unit, Locale locale, Type rootType, int precision, Unit defaultUnit) {
 		String unitText;
 		if (unit != null) {
@@ -607,36 +802,34 @@ public class Specification {
 			unitText = "";
 		}
 		
-		String textValue;
-		if (rootType == Type.Time) {
-			textValue = TIME_FORMATTER.format(new Date(Math.round(rawValue) * 60000));
-		} else if (rootType == Type.Weektime) {
-			textValue = WEEKTIME_FORMATTER.format(new Date(Math.round(rawValue + 5760) * 60000));
-		} else if (rootType == Type.DateTime) {
-			textValue = DATETIME_FORMATTER.format(new Date(Math.round(rawValue + 978307200) * 1000));
-		} else if (precision == 0) {
-			textValue = String.format(locale, "%.0f", rawValue);
-		} else if (precision == 1) {
-			textValue = String.format(locale, "%.1f", rawValue);
-		} else if (precision == 2) {
-			textValue = String.format(locale, "%.2f", rawValue);
-		} else if (precision == 3) {
-			textValue = String.format(locale, "%.3f", rawValue);
-		} else if (precision == 4) {
-			textValue = String.format(locale, "%.4f", rawValue);
-		} else {
-			String format = String.format(locale, "%%.%df", precision);
-			textValue = String.format(locale, format, rawValue);
-		}
+		String textValue = rootType.formatTextValue(rawValue, locale, precision);
 		
 		return textValue + unitText;
 	}
 	
+	/**
+	 * Format a raw value into its textual representation.
+	 * 
+	 * @param pfs `PacketFieldSpec` instance describing the field.
+	 * @param rawValue Raw value.
+	 * @param unit `Unit` instance to append unit text for.
+	 * @param locale Locale to use for number formatting.
+	 * @return Textual representation of the raw value.
+	 */
 	public String formatTextValueFromRawValue(PacketFieldSpec pfs, double rawValue, Unit unit, Locale locale) {
 		String textValue = formatTextValueFromRawValueInternal(rawValue, unit, locale, pfs.type.type, pfs.type.precision, pfs.type.unit);
 		return textValue;
 	}
 	
+	/**
+	 * Format an optional raw value into its textual representation.
+	 * 
+	 * @param pfs `PacketFieldSpec` instance describing the field.
+	 * @param rawValue Optional raw value.
+	 * @param unit `Unit` instance to append unit text for.
+	 * @param locale Locale to use for number formatting.
+	 * @return Textual representation of the raw value or `null` if `rawValue` was `null`.
+	 */
 	public String formatTextValueFromRawValue(PacketFieldSpec pfs, Double rawValue, Unit unit, Locale locale) {
 		String textValue;
 		if (rawValue != null) {
@@ -647,6 +840,17 @@ public class Specification {
 		return textValue;
 	}
 
+	/**
+	 * Get an array of `PacketFieldValue` instances known for the given list
+	 * of `Header` instances.
+	 * 
+	 * Only `Packet` instances within the `headers` array are regarded.
+	 * 
+	 * @param headers Array of `Header` instances to collect `PacketFieldValue`
+	 * instances for.
+	 * @return Array of `PacketFieldValue` instances collected from the
+	 * `headers`.
+	 */
 	public PacketFieldValue[] getPacketFieldValuesForHeaders(Header[] headers) {
 		ArrayList<PacketFieldValue> pfvList = new ArrayList<PacketFieldValue>();
 		
