@@ -23,6 +23,11 @@
  */
 package de.resol.vbus;
 
+/**
+ * The Datagram sub-class provides access to all properties and methods applicable for VBus version 2 datagrams.
+ * In addition to the header it may contain a command, a value ID and a value.
+ * The value ID is a device-specific reference to one of the values presented in the device's menu interface.
+ */
 public class Datagram extends Header {
 
 	protected int command;
@@ -31,6 +36,17 @@ public class Datagram extends Header {
 	
 	protected int value;
 	
+	/**
+	 * Creates a `Datagram` object, initializing its members to the given values.
+	 * 
+	 * @param timestamp Timestamp of this packet, in milliseconds since UNIX epoch.
+	 * @param channel VBus channel of this packet.
+	 * @param destinationAddress Destination VBus address of this packet.
+	 * @param sourceAddress Source VBus address of this packet.
+	 * @param command VBus command of this packet.
+	 * @param valueId Value ID of this packet.
+	 * @param value Value of this packet.
+	 */
 	public Datagram(long timestamp, int channel, int destinationAddress, int sourceAddress, int command, int valueId, int value) {
 		super(timestamp, channel, destinationAddress, sourceAddress);
 		this.command = command;
@@ -38,14 +54,29 @@ public class Datagram extends Header {
 		this.value = value;
 	}
 	
+	/**
+	 * Get the VBus command of this packet.
+	 * 
+	 * @return VBus command of this packet.
+	 */
 	public int getCommand() {
 		return command;
 	}
 	
+	/**
+	 * Get the value ID of this packet.
+	 * 
+	 * @return Value ID of this packet.
+	 */
 	public int getValueId() {
 		return valueId;
 	}
 	
+	/**
+	 * Get the value of this packet.
+	 * 
+	 * @return Value of this packet.
+	 */
 	public int getValue() {
 		return value;
 	}
@@ -122,6 +153,17 @@ public class Datagram extends Header {
 		return result;
 	}
 
+	/**
+     * Creates a Datagram instance from a representation that was
+     * received over a VBus connection.
+	 * 
+	 * @param buffer Byte array containing the representation.
+	 * @param start Start index in the byte array.
+	 * @param length Length of data in the byte array.
+	 * @param timestamp Timestamp of this packet.
+	 * @param channel VBus channel of this packet.
+	 * @return The Datagram instance or `null` if an error occurred.
+	 */
 	public static Datagram fromLiveBuffer(byte[] buffer, int start, int length, long timestamp, int channel) {
 		boolean valid;
 		if ((buffer [start] & 0xFF) != 0xAA) {

@@ -23,6 +23,15 @@
  */
 package de.resol.vbus;
 
+/**
+ * The Packet sub-class provides access to all properties and methods applicable for VBus version 1 packets.
+ * In addition to the packet header it may contain up to 508 bytes of payload data.
+ * The structure of the payload depends on the combination of destination and source addresses as well as
+ * the command of the packet. The different payloads are described in further detail
+ * in Chapter H of the VBus Protocol Specification and can be decoded using a Specification instance.
+ *
+ * @see Specification
+ */
 public class Packet extends Header {
 
 	protected int command;
@@ -30,7 +39,18 @@ public class Packet extends Header {
 	protected int frameCount;
 	
 	protected byte[] frameData;
-	
+
+	/**
+	 * Creates a `Packet` object, initializing its members to the given values.
+	 * 
+	 * @param timestamp Timestamp of this packet, in milliseconds since UNIX epoch.
+	 * @param channel VBus channel of this packet.
+	 * @param destinationAddress Destination VBus address of this packet.
+	 * @param sourceAddress Source VBus address of this packet.
+	 * @param command VBus command of this packet.
+	 * @param frameCount Payload frame count of this packet.
+	 * @param frameData Payload frame data of this packet.
+	 */
 	public Packet(long timestamp, int channel, int destinationAddress, int sourceAddress, int command, int frameCount, byte[] frameData) {
 		super(timestamp, channel, destinationAddress, sourceAddress);
 		this.command = command;
@@ -38,14 +58,29 @@ public class Packet extends Header {
 		this.frameData = frameData;
 	}
 
+	/**
+	 * Get the VBus command of this packet.
+	 * 
+	 * @return VBus command of this packet.
+	 */
 	public int getCommand() {
 		return command;
 	}
 	
+	/**
+	 * Get the payload frame count of this packet.
+	 * 
+	 * @return Payload frame count of this packet.
+	 */
 	public int getFrameCount() {
 		return frameCount;
 	}
 	
+	/**
+	 * Get the payload frame data of this packet.
+	 * 
+	 * @return Payload frame data of this packet.
+	 */
 	public byte[] getFrameData() {
 		return frameData;
 	}
@@ -109,6 +144,17 @@ public class Packet extends Header {
 		return result;
 	}
 	
+	/**
+     * Creates a Packet instance from a representation that was
+     * received over a VBus connection.
+	 * 
+	 * @param buffer Byte array containing the representation.
+	 * @param start Start index in the byte array.
+	 * @param length Length of data in the byte array.
+	 * @param timestamp Timestamp of this packet.
+	 * @param channel VBus channel of this packet.
+	 * @return The Packet instance or `null` if an error occurred.
+	 */
 	public static Packet fromLiveBuffer(byte[] buffer, int start, int length, long timestamp, int channel) {
 		boolean valid;
 		if ((buffer [start] & 0xFF) != 0xAA) {

@@ -23,22 +23,48 @@
  */
 package de.resol.vbus;
 
+/**
+ * The Telegram sub-class provides access to all properties and methods applicable for VBus version 3 telegrams.
+ * In addition to the header it may contain a command and up to 27 bytes of payload data.
+ * The structure of the payload depends on the combination of destination and source address as well as
+ * the command of the telegram.
+ */
 public class Telegram extends Header {
 
 	protected int command;
 	
 	protected byte[] frameData;
 	
+	/**
+	 * Creates a `Telegram` object, initializing its members to the given values.
+	 * 
+	 * @param timestamp Timestamp of this telegram, in milliseconds since UNIX epoch.
+	 * @param channel VBus channel of this telegram.
+	 * @param destinationAddress Destination VBus address of this telegram.
+	 * @param sourceAddress Source VBus address of this telegram.
+	 * @param command VBus command of this telegram.
+	 * @param frameData Payload frame data of this telegram.
+	 */
 	public Telegram(long timestamp, int channel, int destinationAddress, int sourceAddress, int command, byte[] frameData) {
 		super(timestamp, channel, destinationAddress, sourceAddress);
 		this.command = command;
 		this.frameData = frameData;
 	}
 	
+	/**
+	 * Get the VBus command of this telegram.
+	 * 
+	 * @return VBus command of this telegram.
+	 */
 	public int getCommand() {
 		return command;
 	}
 	
+	/**
+	 * Get the payload frame data of this telegram.
+	 * 
+	 * @return Payload frame data of this telegram.
+	 */
 	public byte[] getFrameData() {
 		return frameData;
 	}
@@ -101,14 +127,36 @@ public class Telegram extends Header {
 		return result;
 	}
 	
+	/**
+	 * Get the payload frame count of this telegram.
+	 * 
+	 * @return Payload frame count of this telegram.
+	 */
 	public int getFrameCount() {
 		return getFrameCountForCommand(command);
 	}
 	
+	/**
+	 * Get the payload frame count based on the command of a telegram.
+	 * 
+	 * @param command The command to extract the payload frame count from.
+	 * @return Payload frame count based on the command of a telegram.
+	 */
 	public static int getFrameCountForCommand(int command) {
 		return ((command >> 5) & 3);
 	}
 
+	/**
+     * Creates a Telegram instance from a representation that was
+     * received over a VBus connection.
+	 * 
+	 * @param buffer Byte array containing the representation.
+	 * @param start Start index in the byte array.
+	 * @param length Length of data in the byte array.
+	 * @param timestamp Timestamp of this telegram.
+	 * @param channel VBus channel of this telegram.
+	 * @return The Telegram instance or `null` if an error occurred.
+	 */
 	public static Telegram fromLiveBuffer(byte[] buffer, int start, int length, long timestamp, int channel) {
 		boolean valid;
 		if ((buffer [start] & 0xFF) != 0xAA) {
