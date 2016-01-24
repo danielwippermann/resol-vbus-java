@@ -36,10 +36,7 @@ public class HeaderTest {
 		private int protocolVersion;
 
 		public TestableHeader(long timestamp, int channel, int destinationAddress, int sourceAddress, int protocolVersion) {
-			this.timestamp = timestamp;
-			this.channel = channel;
-			this.destinationAddress = destinationAddress;
-			this.sourceAddress = sourceAddress;
+			super(timestamp, channel, destinationAddress, sourceAddress);
 			this.protocolVersion = protocolVersion;
 		}
 		

@@ -30,10 +30,7 @@ public class Telegram extends Header {
 	protected byte[] frameData;
 	
 	public Telegram(long timestamp, int channel, int destinationAddress, int sourceAddress, int command, byte[] frameData) {
-		this.timestamp = timestamp;
-		this.channel = channel;
-		this.destinationAddress = destinationAddress;
-		this.sourceAddress = sourceAddress;
+		super(timestamp, channel, destinationAddress, sourceAddress);
 		this.command = command;
 		this.frameData = frameData;
 	}

@@ -32,10 +32,7 @@ public class Datagram extends Header {
 	protected int value;
 	
 	public Datagram(long timestamp, int channel, int destinationAddress, int sourceAddress, int command, int valueId, int value) {
-		this.timestamp = timestamp;
-		this.channel = channel;
-		this.destinationAddress = destinationAddress;
-		this.sourceAddress = sourceAddress;
+		super(timestamp, channel, destinationAddress, sourceAddress);
 		this.command = command;
 		this.valueId = valueId;
 		this.value = value;

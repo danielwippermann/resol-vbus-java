@@ -33,11 +33,11 @@ public abstract class Header implements Comparable<Header>{
 	
 	protected int sourceAddress;
 	
-	protected Header() {
-		timestamp = System.currentTimeMillis();
-		channel = 0;
-		destinationAddress = 0;
-		sourceAddress = 0;
+	protected Header(long timestamp, int channel, int destinationAddress, int sourceAddress) {
+		this.timestamp = timestamp;
+		this.channel = channel;
+		this.destinationAddress = destinationAddress;
+		this.sourceAddress = sourceAddress;
 	}
 	
 	public long getTimestamp() {
