@@ -26,6 +26,11 @@ package de.resol.vbus;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * The `LiveInputStream` class wraps another `InputStream` instance and tries
+ * to decode the data received using that other stream into VBus `Packet`,
+ * `Datagram` or `Telegram` instances. 
+ */
 public class LiveInputStream {
 
 	protected InputStream is;
@@ -38,6 +43,12 @@ public class LiveInputStream {
 	
 	protected long rxTimestamp;
 	
+	/**
+	 * Creates a `LiveInputStream` instance, initializing its members to the given values.
+	 * 
+	 * @param is InputStream to receive raw VBus data from.
+	 * @param channel VBus channel to associate received VBus headers with.
+	 */
 	public LiveInputStream(InputStream is, int channel) {
 		this.is = is;
 		this.channel = channel;
@@ -46,6 +57,13 @@ public class LiveInputStream {
 		rxTimestamp = 0;
 	}
 	
+	/**
+	 * Try to decode the received data in VBus `Header` instances, optionally
+	 * reading additional data from the wrapped `InputStream`.
+	 *  
+	 * @return A `Header` instance or `null` on eof of stream.
+	 * @throws IOException
+	 */
 	public Header readHeader() throws IOException {
 		Header header = null;
 		while (true) {

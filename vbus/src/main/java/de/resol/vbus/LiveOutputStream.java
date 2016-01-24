@@ -26,14 +26,29 @@ package de.resol.vbus;
 import java.io.IOException;
 import java.io.OutputStream;
 
+/**
+ * The `LiveOutputStream` class wraps another `OutputStream` instance and
+ * uses it to send live representations of VBus `Header` instances over it.
+ */
 public class LiveOutputStream {
 
 	protected OutputStream os;
 	
+	/**
+	 * Create a `LiveOutputStream` instance, initializing its members to the given values.
+	 * @param os OutputStream to send raw VBus data to.
+	 */
 	public LiveOutputStream(OutputStream os) {
 		this.os = os;
 	}
 	
+	/**
+	 * Converts the given `Header` instance into its live representation and
+	 * sends it to the wrapped `OutputStream`.
+	 * 
+	 * @param header `Header` instance to send.
+	 * @throws IOException
+	 */
 	public void writeHeader(Header header) throws IOException {
 		os.write(header.toLiveBuffer(null, 0, 0));
 	}
