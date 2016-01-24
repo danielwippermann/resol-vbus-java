@@ -27,11 +27,21 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 
+/**
+ * The `TcpConnection` class extends the basic `Connection` functionality and
+ * uses TCP socket communication the send and receive VBus live data using
+ * one of the LAN-enabled communication adapters like:
+ * 
+ * - VBus/LAN
+ * - DL2
+ * - DL3
+ * - KM1
+ * 
+ * In addition to that it allows a connection using RESOL's VBus.net service.
+ */
 public class TcpConnection extends Connection {
 
 	private SocketAddress socketAddress;
@@ -50,6 +60,16 @@ public class TcpConnection extends Connection {
 	
 	private LiveOutputStream os;
 	
+	/**
+	 * Creates a `TcpConnection` instance, initializing its members to the given values.
+	 * 
+	 * @param selfAddress VBus address to use as source address in `Header` instances
+	 * created by this `Connection`.
+	 * @param socketAddress Host and port to connect to TCP socket to.
+	 * @param viaTag Via tag to connect to or `null` if VBus.net is not used.
+	 * @param password Password to connect to VBus-over-TCP service.
+	 * @param channel VBus channel to connect to.
+	 */
 	public TcpConnection(int selfAddress, SocketAddress socketAddress, String viaTag, String password, int channel) {
 		super(selfAddress);
 		this.socketAddress = socketAddress;
@@ -111,15 +131,7 @@ public class TcpConnection extends Connection {
 						throw new IOException("Socket closed");
 					}
 
-					for (ConnectionListener listener : this.listeners) {
-						if (header instanceof Packet) {
-							listener.packetReceived(this, (Packet) header);
-						} else if (header instanceof Datagram) {
-							listener.datagramReceived(this, (Datagram) header);
-						} else if (header instanceof Telegram) {
-							listener.telegramReceived(this, (Telegram) header);
-						}
-					}
+					emitHeaderReceived(header);
 				} catch (IOException ex) {
 					checkAndSetConnectionState(ConnectionState.CONNECTED, ConnectionState.INTERRUPTED);
 				}
