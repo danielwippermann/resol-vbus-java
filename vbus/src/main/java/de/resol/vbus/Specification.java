@@ -26,6 +26,7 @@ package de.resol.vbus;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -662,8 +663,20 @@ public class Specification {
 				}
 			}
 			
-			// FIXME(daniel): Create "unknown device" stub if no device found
-			// FIXME(daniel): Replace text pattern "#" with sub address
+			if (nameTexts != null) {
+				nameTexts = Arrays.copyOf(nameTexts, nameTexts.length);
+			} else {
+				nameTexts = new Text[] {
+					new Text("ref", String.format("Unknown device 0x%04X", selfAddress)),
+				};
+			}
+			
+			for (int i = 0; i < nameTexts.length; i++) {
+				Text text = nameTexts [i];
+				if (text.getText().contains("#")) {
+					nameTexts [i] = new Text(text.getLang(), text.getText().replaceAll("#", "#" + (selfAddress & 15)));
+				}
+			}
 			
 			deviceSpec = new DeviceSpec(channel, selfAddress, 0xFFFF, peerAddress, 0xFFFF, nameTexts);
 			deviceSpecById.put(id, deviceSpec);

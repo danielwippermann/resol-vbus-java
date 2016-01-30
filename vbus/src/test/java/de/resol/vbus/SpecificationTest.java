@@ -215,6 +215,14 @@ public class SpecificationTest {
 		DeviceSpec testDeviceSpec2 = spec.getDeviceSpec(0, 0x7E11, 0x0010);
 		
 		assertEquals(testDeviceSpec1, testDeviceSpec2);
+
+		DeviceSpec testDeviceSpec3 = spec.getDeviceSpec(0, 0x0001, 0x0000);
+		
+		assertEquals("Unknown device 0x0001", Text.getLocalizedText(testDeviceSpec3.getNameTexts(), "ref"));
+
+		DeviceSpec testDeviceSpec4 = spec.getDeviceSpec(0, 0x6652, 0x0000);
+		
+		assertEquals("EM #2", Text.getLocalizedText(testDeviceSpec4.getNameTexts(), "ref"));
 	}
 
 	@Test
@@ -240,7 +248,7 @@ public class SpecificationTest {
 	}
 	
 	@Test
-	public void getPacketSpec() throws Exception {
+	public void testGetPacketSpec() throws Exception {
 		PacketSpec testPacketSpec1 = spec.getPacketSpec(0, 0x0010, 0x7E11, 0x0100);
 		
 		assertEquals(0, testPacketSpec1.getChannel());
