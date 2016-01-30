@@ -152,11 +152,13 @@ public class TcpDataSourceProvider extends DataSourceProvider {
 				}
 			}
 
-			scheduler.shutdown();
-			try {
-				scheduler.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-			} catch (InterruptedException ex) {
-				// nop
+			if (scheduler != null) {
+				scheduler.shutdown();
+				try {
+					scheduler.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+				} catch (InterruptedException ex) {
+					// nop
+				}
 			}
 
 			return dataSourceList.toArray(new TcpDataSource [dataSourceList.size()]);
@@ -167,38 +169,35 @@ public class TcpDataSourceProvider extends DataSourceProvider {
 			if (dataSourceById.containsKey(addressId)) {
 				// skip
 			} else {
-				dataSourceById.put(addressId, null);
-				
-				scheduler.execute(new Runnable() {
+				if (fetchInformation && (scheduler != null)) {
+					dataSourceById.put(addressId, null);
 					
-					public void run() {
-						TcpDataSource dataSource = null;
-						if (fetchInformation) {
-							try {
-								dataSource = fetchInformation(address, 80, timeout);
-							} catch (IOException ex) {
-								try {
-									dataSource = fetchInformation(address, 3000, timeout);
-								} catch (IOException ex2) {
-									// nop
-									System.out.println("Did not get information from " + address);
-									ex.printStackTrace();
-									ex2.printStackTrace();
-								}
-							}
-						} else {
-							dataSource = new TcpDataSource(getSharedProvider(), address, 80, 7053, null, null, null, null, null, null, null);
-						}
+					scheduler.execute(new Runnable() {
 						
-						if (dataSource != null) {
-							dataSourceById.put(addressId, dataSource);
-							dataSourceList.add(dataSource);
-						} else {
-							dataSourceById.remove(addressId);
+						public void run() {
+							TcpDataSource dataSource = null;
+							try {
+								dataSource = fetchInformation(address, timeout);
+							} catch (IOException ex) {
+								// nop
+								System.out.println("Did not get information from " + address);
+								ex.printStackTrace();
+							}
+							
+							if (dataSource != null) {
+								dataSourceById.put(addressId, dataSource);
+								dataSourceList.add(dataSource);
+							} else {
+								dataSourceById.remove(addressId);
+							}
 						}
-					}
-
-				});
+	
+					});
+				} else {
+					TcpDataSource dataSource = new TcpDataSource(getSharedProvider(), address, 80, 7053, null, null, null, null, null, null, null);
+					dataSourceById.put(addressId, dataSource);
+					dataSourceList.add(dataSource);
+				}
 			}
 		}
 		
