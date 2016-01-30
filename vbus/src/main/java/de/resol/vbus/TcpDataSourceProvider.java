@@ -209,6 +209,20 @@ public class TcpDataSourceProvider extends DataSourceProvider {
 		return discovery.discoverDataSources(address, tries, timeout, fetchInformation);
 	}
 	
+	public static TcpDataSource fetchInformation(InetAddress address, int timeout) throws IOException {
+		TcpDataSource dataSource = null;
+		try {
+			dataSource = fetchInformation(address, 80, timeout);
+		} catch (IOException ex) {
+			try {
+				dataSource = fetchInformation(address, 3000, timeout);
+			} catch (IOException ex2) {
+				throw ex;
+			}
+		}
+		return dataSource;
+	}
+	
 	public static TcpDataSource fetchInformation(InetAddress address, int port, int timeout) throws IOException {
 		URL url = new URL("http://" + address.getHostName() + ":" + port + "/cgi-bin/get_resol_device_information");
 		
