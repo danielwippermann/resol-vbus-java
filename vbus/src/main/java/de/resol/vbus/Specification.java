@@ -724,8 +724,10 @@ public class Specification {
 					}
 				}
 			}
-			
-			// FIXME(daniel): do not create PacketSpec if no template was found
+
+			if (fieldSpecs == null) {
+				fieldSpecs = new PacketFieldSpec[0];
+			}
 
 			packetSpec = new PacketSpec(channel, destinationAddress, 0xFFFF, sourceAddress, 0xFFFF, command, fieldSpecs);
 			packetSpecById.put(id,  packetSpec);

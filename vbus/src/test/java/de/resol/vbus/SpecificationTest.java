@@ -249,10 +249,16 @@ public class SpecificationTest {
 		assertEquals(0x7E11, testPacketSpec1.getSourceAddress());
 		assertEquals(0xFFFF, testPacketSpec1.getSourceMask());
 		assertEquals(0x0100, testPacketSpec1.getCommand());
+		assertNotEquals(null, testPacketSpec1.getFieldSpecs());
+		assertEquals(true, testPacketSpec1.getFieldSpecs().length >= 51);
 
 		PacketSpec testPacketSpec2 = spec.getPacketSpec(0, 0x0010, 0x7E11, 0x0100);
 
 		assertEquals(testPacketSpec1, testPacketSpec2);
+		
+		PacketSpec testPacketSpec3 = spec.getPacketSpec(0, 0x0015, 0x7E11, 0x0100);
+		
+		assertNotEquals(null, testPacketSpec3.getFieldSpecs());
 	}
 
 	@Test
@@ -391,12 +397,20 @@ public class SpecificationTest {
 			new Datagram(0, 0, 0x0010, 0x7E11, 0x0500, 0, 0),
 		};
 
-		PacketFieldValue[] pfvs = spec.getPacketFieldValuesForHeaders(refHeaders1);
+		PacketFieldValue[] testPfvs1 = spec.getPacketFieldValuesForHeaders(refHeaders1);
 		
-		assertEquals(true, pfvs.length >= 51);
-		assertEquals("00_0010_7E11_10_0100_000_2_0", pfvs [0].getPacketFieldId());
-		assertEquals(51.3, pfvs [0].getRawValue().doubleValue(), 0.001);
-		assertEquals("51.3 °C", pfvs [0].formatTextValue(null, locale));
+		assertEquals(true, testPfvs1.length >= 51);
+		assertEquals("00_0010_7E11_10_0100_000_2_0", testPfvs1 [0].getPacketFieldId());
+		assertEquals(51.3, testPfvs1 [0].getRawValue().doubleValue(), 0.001);
+		assertEquals("51.3 °C", testPfvs1 [0].formatTextValue(null, locale));
+		
+		Header[] refHeaders2 = new Header[] {
+			new Packet(0, 0, 0x0015, 0x7E11, 0x0100, 0, null),
+		};
+
+		PacketFieldValue[] testPfvs2 = spec.getPacketFieldValuesForHeaders(refHeaders2);
+		
+		assertEquals(true, testPfvs2.length == 0);
 	}
 
 }
