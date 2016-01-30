@@ -67,8 +67,10 @@ public class HeaderSetConsolidator<T extends Header> extends HeaderSet<T> {
 	
 	protected int timeToLive;
 	
-	protected long lastIntervalTimestamp;
+	protected long lastTimerTimestamp;
 	
+	protected long lastSieveTimestamp;
+
 	protected ScheduledFuture<?> future;
 	
 	/**
@@ -93,21 +95,25 @@ public class HeaderSetConsolidator<T extends Header> extends HeaderSet<T> {
 	 * 
 	 * @param interval Interval in milliseconds.
 	 */
-	public void startTimer(int interval) {
+	public void startTimer(final int interval) {
 		final HeaderSetConsolidator<T> that = this;
 
 		stopTimer();
 
-		this.lastIntervalTimestamp = System.currentTimeMillis();
+		this.lastTimerTimestamp = System.currentTimeMillis();
 
 		Runnable command = new Runnable() {
 			
 			public void run() {
-				that.handleInterval();
+				try {
+					that.handleTimerInterval(interval);
+				} catch (Throwable t) {
+					t.printStackTrace();
+				}
 			}
 		};
 		
-		int futureInterval = Math.min(interval, 500);
+		int futureInterval = Math.min(interval / 2, 500);
 
 		future = scheduler.scheduleAtFixedRate(command, 0, futureInterval, TimeUnit.MILLISECONDS);
 	}
@@ -141,10 +147,20 @@ public class HeaderSetConsolidator<T extends Header> extends HeaderSet<T> {
 		processHeaderSetInternal(timestamp);
 	}
 	
-	private void handleInterval() {
+	private void handleTimerInterval(int interval) {
 		long timestamp = System.currentTimeMillis();
 		
-		processHeaderSetInternal(timestamp);
+		long lastInterval = lastTimerTimestamp / interval;
+		long currentInterval = timestamp / interval;
+		long diff = currentInterval - lastInterval;
+		
+		boolean include = ((diff < -1) || (diff > 0));
+		
+		if (include) {
+			processHeaderSetInternal(timestamp);
+			
+			lastTimerTimestamp = timestamp;
+		}
 	}
 	
 	private void processHeaderSetInternal(long timestamp) {
@@ -156,7 +172,7 @@ public class HeaderSetConsolidator<T extends Header> extends HeaderSet<T> {
 		} else if (sieveInterval <= 0) {
 			include = true;
 		} else {
-			long lastInterval = lastIntervalTimestamp / sieveInterval;
+			long lastInterval = lastSieveTimestamp / sieveInterval;
 			long currentInterval = timestamp / sieveInterval;
 			long diff = currentInterval - lastInterval;
 			
@@ -177,7 +193,7 @@ public class HeaderSetConsolidator<T extends Header> extends HeaderSet<T> {
 				}
 			}
 			
-			lastIntervalTimestamp = timestamp;
+			lastSieveTimestamp = timestamp;
 		}
 	}
 
