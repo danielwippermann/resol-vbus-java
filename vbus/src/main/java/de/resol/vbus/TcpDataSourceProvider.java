@@ -132,7 +132,6 @@ public class TcpDataSourceProvider extends DataSourceProvider {
 						}
 						
 						InetAddress replyAddress = replyPacket.getAddress();
-						System.out.println(replyAddress);
 						if (replyPacket.getLength() != replyBuffer.length) {
 							// skip
 						} else {
