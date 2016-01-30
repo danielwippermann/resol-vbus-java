@@ -7,7 +7,14 @@ A Java library for processing RESOL VBus data.
 
 - Connects to various RESOL devices
 - Processes live VBus data streams
+- Discovers LAN-enabled RESOL devices on the local network
 - Allows to send parameterization commands to a controller
+
+
+## Documentation
+
+TBD
+
 
 
 ## Supported Devices & Services
@@ -28,9 +35,11 @@ A Java library for processing RESOL VBus data.
 * [RESOL VBus over TCP Specification](http://danielwippermann.github.io/resol-vbus/vbus-over-tcp.html)
 
 
+
 ## Changelog
 
 TBD
+
 
 
 ## Legal Notices
