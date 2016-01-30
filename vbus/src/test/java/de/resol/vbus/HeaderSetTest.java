@@ -23,8 +23,7 @@
  */
 package de.resol.vbus;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -55,6 +54,21 @@ public class HeaderSetTest {
 		assertEquals(2, testHeaderSet2.headerList.size());
 		assertTrue(testHeaderSet2.headerList.contains(testPacket1));
 		assertTrue(testHeaderSet2.headerList.contains(testPacket2));
+	}
+
+	@Test
+	public void testGetAndSetTimestamp() throws Exception {
+		long refTimestamp1 = System.currentTimeMillis();
+		Packet testPacket1 = new Packet(refTimestamp1 + 1, 1, 0, 0, 0, 0, null);
+		Packet testPacket2 = new Packet(refTimestamp1 + 2, 2, 0, 0, 0, 0, null);
+		
+		HeaderSet<Packet> testHeaderSet1 = new HeaderSet<Packet>(refTimestamp1, testPacket1);
+
+		assertEquals(refTimestamp1, testHeaderSet1.getTimestamp());
+		
+		testHeaderSet1.setTimestamp(testPacket2.timestamp);
+
+		assertEquals(testPacket2.timestamp, testHeaderSet1.getTimestamp());
 	}
 
 	@Test

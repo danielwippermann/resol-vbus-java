@@ -93,6 +93,24 @@ public class HeaderSet<T extends Header> {
 	}
 	
 	/**
+	 * Get the current timestamp of the header set.
+	 * 
+	 * @return Current timestamp of the header set.
+	 */
+	public long getTimestamp() {
+		return timestamp;
+	}
+
+	/**
+	 * Set the current timestamp of the header set.
+	 * 
+	 * @param timestamp Current timestamp of the header set.
+	 */
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
+	}
+	
+	/**
 	 * Add a listener that fired every time a `Header` is added to this header set.
 	 * 
 	 * @param listener Listener
