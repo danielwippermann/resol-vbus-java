@@ -23,7 +23,7 @@
  */
 package de.resol.vbus;
 
-public class ConfigurationValue {
+public class ConfigurationValue implements Cloneable {
 
 	private String valueId;
 	
@@ -114,5 +114,15 @@ public class ConfigurationValue {
 		}
 		return hash;
 	}
-
+	
+	@Override
+	public ConfigurationValue clone() {
+		try {
+			return ((ConfigurationValue) super.clone());
+		} catch (CloneNotSupportedException ex) {
+			// NOTE(daniel): should not happen since it is clonable
+			throw new Error(ex);
+		}
+	}
+	
 }
