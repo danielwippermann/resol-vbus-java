@@ -23,14 +23,48 @@
  */
 package de.resol.vbus;
 
+import java.util.TimeZone;
+
 public interface ConfigurationOptimizer {
 
+	/**
+	 * Completes the given configuration, which can either be an array of
+	 * partially initialized `ConfigurationValue` objects or `null` to
+	 * generate a complete set of known `ConfigurationValue` objects for the
+	 * given device.
+	 * 
+	 * @param values An array of partially initialized `ConfigurationValue` objects or `null`.
+	 * @return An array of completed `ConfigurationValue` objects.
+	 */
 	public abstract ConfigurationValue[] completeConfiguration(ConfigurationValue[] values);
 	
+	/**
+	 * Get an optimized array of `ConfigurationValue` objects based on what
+	 * values have already been loaded before.
+	 * 
+	 * @param values An array of already loaded `ConfigurationValue` objects.
+	 * @return An array of `ConfigurationValue` objects to load next.
+	 */
 	public abstract ConfigurationValue[] optimizeLoadConfiguration(ConfigurationValue[] values);
 
+	/**
+	 * Gets an optimized array of `ConfigurationValue` objects based on what
+	 * values were set in the device befor.
+	 * 
+	 * @param newValues An array of new `ConfigurationValue` objects to set.
+	 * @param oldValues An array of already set `ConfigurationValue` object.
+	 * @return An array of `ConfigurationValue` objects to set next.
+	 */
 	public abstract ConfigurationValue[] optimizeSaveConfiguration(ConfigurationValue[] newValues, ConfigurationValue[] oldValues);
 
-	public abstract ConfigurationValue[] generateClockConfiguration();
+	/**
+	 * Gets an array of `ConfigurationValue` objects to set the device to
+	 * the specified date / time within the specified timezone.
+	 * 
+	 * @param time The time in milliseconds since start of the era.
+	 * @param timeZone the timezone of the device. 
+	 * @return An array of `ConfigurationValue` objects to set the date and time.
+	 */
+	public abstract ConfigurationValue[] generateClockConfiguration(long time, TimeZone timeZone);
 
 }
