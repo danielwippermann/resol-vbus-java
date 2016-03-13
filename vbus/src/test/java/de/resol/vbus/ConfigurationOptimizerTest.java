@@ -23,6 +23,8 @@
  */
 package de.resol.vbus;
 
+import java.util.TimeZone;
+
 public class ConfigurationOptimizerTest {
 
 	public static class TestableConfigurationOptimizer implements ConfigurationOptimizer {
@@ -41,6 +43,8 @@ public class ConfigurationOptimizerTest {
 		ConfigurationValue[] oscValuesResult;
 		
 		int gccCallCount;
+		long gccTimeParam;
+		TimeZone gccTimeZoneParam;
 		ConfigurationValue[] gccValuesResult;
 		
 		public ConfigurationValue[] completeConfiguration(ConfigurationValue[] values) {
@@ -62,8 +66,10 @@ public class ConfigurationOptimizerTest {
 			return oscValuesResult;
 		}
 		
-		public ConfigurationValue[] generateClockConfiguration() {
+		public ConfigurationValue[] generateClockConfiguration(long time, TimeZone timeZone) {
 			gccCallCount++;
+			gccTimeParam = time;
+			gccTimeZoneParam = timeZone;
 			return gccValuesResult;
 		}
 		
