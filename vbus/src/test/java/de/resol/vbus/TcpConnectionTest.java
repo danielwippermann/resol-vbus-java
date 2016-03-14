@@ -57,7 +57,7 @@ public class TcpConnectionTest {
 			ServerSocket serverSocket = new ServerSocket();
 			serverSocket.bind(null);
 			
-			System.out.println(serverSocket.getLocalPort());
+//			System.out.println(serverSocket.getLocalPort());
 			
 			this.serverSocket = serverSocket;
 			
@@ -66,7 +66,7 @@ public class TcpConnectionTest {
 				public void run() {
 					while (!stopped) {
 						try {
-							System.err.println("Listening for new connection");
+//							System.err.println("Listening for new connection");
 							listenInBackground();
 						} catch (IOException ex) {
 	//						ex.printStackTrace();
@@ -233,7 +233,7 @@ public class TcpConnectionTest {
 		endpoint.setup();
 		
 		for (int phase = 0; phase < 18; phase++) {
-			System.err.println("PHASE " + phase);
+//			System.err.println("PHASE " + phase);
 			
 			endpoint.phase = phase;
 			
@@ -424,19 +424,19 @@ public class TcpConnectionTest {
 				@Override
 				public void packetReceived(Connection connection, Packet packet) {
 					assertEquals(testConnection5, connection);
-					System.out.println(packet.getId());
+//					System.out.println(packet.getId());
 				}
 				
 				@Override
 				public void datagramReceived(Connection connection, Datagram dgram) {
 					assertEquals(testConnection5, connection);
-					System.out.println(dgram.getId());
+//					System.out.println(dgram.getId());
 				}
 				
 				@Override
 				public void telegramReceived(Connection connection, Telegram tgram) {
 					assertEquals(testConnection5, connection);
-					System.out.println(tgram.getId());
+//					System.out.println(tgram.getId());
 				}
 				
 			};
