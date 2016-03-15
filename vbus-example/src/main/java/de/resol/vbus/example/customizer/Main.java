@@ -24,6 +24,7 @@
 package de.resol.vbus.example.customizer;
 
 import java.net.InetAddress;
+import java.util.TimeZone;
 
 import de.resol.vbus.ConfigurationOptimizer;
 import de.resol.vbus.ConfigurationOptimizerFactory;
@@ -32,7 +33,6 @@ import de.resol.vbus.Connection;
 import de.resol.vbus.ConnectionAdapter;
 import de.resol.vbus.ConnectionCustomizer;
 import de.resol.vbus.Datagram;
-import de.resol.vbus.HeaderSetConsolidator;
 import de.resol.vbus.Packet;
 import de.resol.vbus.TcpDataSource;
 import de.resol.vbus.TcpDataSourceProvider;
@@ -54,6 +54,16 @@ public class Main {
 				@Override
 				public void connectionStateChanged(Connection connection) {
 					System.out.println("connection@connectionStateChanged: " + connection.getConnectionState());
+				}
+				
+				@Override
+				public void packetReceived(Connection connection, Packet packet) {
+					System.out.println("connection@packetReceived: " + packet.getId());
+				}
+				
+				@Override
+				public void datagramReceived(Connection connection, Datagram dgram) {
+					System.out.println("connection@datagramReceived: " + dgram.getId());
 				}
 								
 			});
@@ -81,6 +91,12 @@ public class Main {
 
 					System.out.println(value.getValueId() + ": " + value.getValue());
 				}
+				
+				// Generate the set of configuration values to set the clock
+				values = optimizer.generateClockConfiguration(System.currentTimeMillis(), TimeZone.getDefault());
+				
+				// Set the clock to (approximately) correct time
+				customizer.saveConfiguration(values, null, false);
 			}
 			
 			// Disconnect the connection
@@ -89,4 +105,5 @@ public class Main {
 			ex.printStackTrace();
 		}
 	}
+
 }
