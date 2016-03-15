@@ -220,7 +220,9 @@ public abstract class Connection {
 			
 			synchronized (rxHeader) {
 				for (int currentTry = 0; currentTry < tries; currentTry++) {
-					send(txHeader);
+					if (txHeader != null) {
+						send(txHeader);
+					}
 
 					if (rxHeader [0] == null) {
 						try {
