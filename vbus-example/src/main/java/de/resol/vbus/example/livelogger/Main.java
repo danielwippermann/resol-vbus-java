@@ -123,7 +123,7 @@ public class Main {
 		System.out.println("packetFieldValues.length => " + pfvs.length);
 
 		for (PacketFieldValue pfv : pfvs) {
-			System.out.println("Id: " + pfv.getPacketFieldId() + ", Name: " + pfv.getName() + ", Raw: " + pfv.getRawValue() + ", Text: " + pfv.formatTextValue(null, null));
+			System.out.println("Id: " + pfv.getPacketFieldId() + ", Name: " + pfv.getName() + ", Raw: " + pfv.getRawValueDouble() + ", Text: " + pfv.formatTextValue(null, null));
 		}
 	}
 	
