@@ -147,6 +147,13 @@ public abstract class Connection {
 	 */
 	public abstract void send(Header header) throws IOException;
 	
+	// This function allows testing the `transceive` method with a `txHeader` of `null`. 
+	protected void sendOrTick(Header header) throws IOException {
+		if (header != null) {
+			send(header);
+		}
+	}
+
 	protected void emitHeaderReceived(Header header) {
 		for (ConnectionListener listener : this.listeners) {
 			if (header instanceof Packet) {
@@ -220,9 +227,7 @@ public abstract class Connection {
 			
 			synchronized (rxHeader) {
 				for (int currentTry = 0; currentTry < tries; currentTry++) {
-					if (txHeader != null) {
-						send(txHeader);
-					}
+					sendOrTick(txHeader);
 
 					if (rxHeader [0] == null) {
 						try {

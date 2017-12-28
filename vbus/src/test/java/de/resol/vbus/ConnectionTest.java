@@ -313,7 +313,7 @@ public class ConnectionTest {
 		
 		TestableConnection testConnection1 = new TestableConnection() {
 			
-			public void send(Header header) throws IOException {
+			protected void sendOrTick(Header header) throws IOException {
 				emulateHeaderReceived(refPacket1);
 				emulateHeaderReceived(refDatagram1);
 				emulateHeaderReceived(refDatagram2);
