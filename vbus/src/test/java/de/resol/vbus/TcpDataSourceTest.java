@@ -34,7 +34,7 @@ public class TcpDataSourceTest {
 	@Test
 	public void testConstructor() throws Exception {
 		TcpDataSourceProvider refProvider1 = TcpDataSourceProvider.getSharedProvider();
-		InetAddress refAddress1 = InetAddress.getByName("resol-demo-1.via.vbus.net");
+		InetAddress refAddress1 = InetAddress.getByName("resol-demo-1.vbus.io");
 		int refWebPort1 = 80;
 		int refLivePort1 = 7053;
 		String refVendor1 = "RESOL";
@@ -67,7 +67,7 @@ public class TcpDataSourceTest {
 	
 	@Test
 	public void testGetAndSetViaTag() throws Exception {
-		InetAddress refAddress1 = InetAddress.getByName("resol-demo-1.via.vbus.net");
+		InetAddress refAddress1 = InetAddress.getByName("resol-demo-1.vbus.io");
 
 		TcpDataSource testDataSource1 = new TcpDataSource(null, refAddress1, 0, 0, null, null, null, null, null, null, null);
 

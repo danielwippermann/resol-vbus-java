@@ -85,7 +85,7 @@ public class TcpDataSourceProviderTest {
 			InetAddress address = null;
 			TcpDataSource dataSource = null;
 			try {
-				address = Inet4Address.getByName("resol-demo-1.via.vbus.net");
+				address = Inet4Address.getByName("resol-demo-1.vbus.io");
 				dataSource = TcpDataSourceProvider.fetchInformation(address, 80, 500);
 			} catch (IOException ex) {
 				exceptionCount++;

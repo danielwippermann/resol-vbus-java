@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 
 public class TcpDataSource extends DataSource {
 
-	public static final Pattern VIA_VBUS_NET_PATTERN = Pattern.compile("^([^\\.]+)\\.via\\.vbus\\.net$");
+	public static final Pattern VIA_VBUS_NET_PATTERN = Pattern.compile("^([^\\.]+)\\.vbus\\.io$");
 	
 	protected InetAddress address;
 	
