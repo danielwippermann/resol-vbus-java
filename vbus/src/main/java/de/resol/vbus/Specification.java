@@ -26,11 +26,15 @@ package de.resol.vbus;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.TimeZone;
+
+import de.resol.vbus.SpecificationFile.Language;
+import de.resol.vbus.SpecificationFile.PacketTemplateFieldPart;
+import de.resol.vbus.SpecificationFile.Type;
+import de.resol.vbus.SpecificationFile.Unit;
 
 /**
  * The `Specification` class helps with decoding the payload frame data of
@@ -61,7 +65,8 @@ public class Specification {
 	 */
 	public static synchronized Specification getDefaultSpecification() {
 		if (defaultSpecification == null) {
-			defaultSpecification = SpecificationData.createDefaultSpecification();
+			SpecificationFile specFile = SpecificationFile.getDefaultSpecificationFile();
+			defaultSpecification = new Specification(specFile);
 		}
 		return defaultSpecification;
 	}
@@ -73,24 +78,24 @@ public class Specification {
 	}
 	
 	/**
-	 * The `Type` class helps formatting raw values into readable text.
-	 * The library supports four different `Type` instances out-of-the-box:
+	 * The `Formatter` class helps formatting raw values into readable text.
+	 * The library supports four different `Formatter` instances out-of-the-box:
 	 * 
-	 * - `Type.Number`
-	 * - `Type.Time`
-	 * - `Type.Weektime`
-	 * - `Type.DateTime`
+	 * - `Formatter.Number`
+	 * - `Formatter.Time`
+	 * - `Formatter.Weektime`
+	 * - `Formatter.DateTime`
 	 */
-	public static abstract class Type {
+	public static abstract class Formatter {
 		
-		private String typeId;
+		private String formatterId;
 		
-		protected Type(String typeId) {
-			this.typeId = typeId;
+		protected Formatter(String formatterId) {
+			this.formatterId = formatterId;
 		}
 
-		public String getTypeId() {
-			return typeId;
+		public String getFormatterId() {
+			return formatterId;
 		}
 		
 		protected abstract String formatTextValue(double rawValue, Locale locale, int precision);
@@ -99,7 +104,7 @@ public class Specification {
 		private static final DateFormat WEEKTIME_FORMATTER = createUtcDateFormat("EEE,HH:mm"); 
 		private static final DateFormat DATETIME_FORMATTER = createUtcDateFormat("yyyy-MM-dd HH:mm:ss");
 
-		public static final Type Number = new Type("Number") {
+		public static final Formatter Number = new Formatter("Number") {
 			
 			@Override
 			protected String formatTextValue(double rawValue, Locale locale, int precision) {
@@ -123,7 +128,7 @@ public class Specification {
 			
 		};
 		
-		public static final Type Time = new Type("Time") {
+		public static final Formatter Time = new Formatter("Time") {
 			
 			@Override
 			protected String formatTextValue(double rawValue, Locale locale, int precision) {
@@ -134,7 +139,7 @@ public class Specification {
 
 		};
 		
-		public static final Type Weektime = new Type("Weektime") {
+		public static final Formatter WeekTime = new Formatter("WeekTime") {
 			
 			@Override
 			protected String formatTextValue(double rawValue, Locale locale, int precision) {
@@ -145,7 +150,7 @@ public class Specification {
 
 		};
 
-		public static final Type DateTime = new Type("DateTime") {
+		public static final Formatter DateTime = new Formatter("DateTime") {
 
 			@Override
 			protected String formatTextValue(double rawValue, Locale locale, int precision) {
@@ -156,135 +161,28 @@ public class Specification {
 
 		};
 		
-	}
-	
-	/**
-	 * The `Unit` class expresses a physical unit including its optional
-	 * membership in a unit family.
-	 * 
-	 * Several `Unit` constants are provided by the library out-of-the-box.
-	 */
-	public static class Unit {
-		
-		 public static final Unit Bars = new Unit("Bars", "Pressure", " bar");
-		 public static final Unit Btus = new Unit("Btus", "Energy", " BTU");
-		 public static final Unit CubicMeters = new Unit("CubicMeters", "Volume", " m³");
-		 public static final Unit CubicMetersPerHour = new Unit("CubicMetersPerHour", "VolumeFlow", " m³/h");
-		 public static final Unit Days = new Unit("Days", "Time", " d");
-		 public static final Unit DegreesAngular = new Unit("DegreesAngular", null, " °");
-		 public static final Unit DegreesCelsius = new Unit("DegreesCelsius", "Temperature", " °C");
-		 public static final Unit DegreesFahrenheit = new Unit("DegreesFahrenheit", "Temperature", " °F");
-		 public static final Unit DegreesKelvin = new Unit("DegreesKelvin", null, " K");
-		 public static final Unit Hectopascals = new Unit("Hectopascals", null, " hPa");
-		 public static final Unit Hertz = new Unit("Hertz", null, " Hz");
-		 public static final Unit Hours = new Unit("Hours", "Time", " h");
-		 public static final Unit KiloWattHoursPerSquareMeterPerDay = new Unit("KiloWattHoursPerSquareMeterPerDay", null, " kWh/(m²*d)");
-		 public static final Unit KilogramsPerCubicMeter = new Unit("KilogramsPerCubicMeter", null, " kg/m³");
-		 public static final Unit KilogramsPerHour = new Unit("KilogramsPerHour", null, " kg/h");
-		 public static final Unit KilowattHours = new Unit("KilowattHours", "Energy", " kWh");
-		 public static final Unit Kilowatts = new Unit("Kilowatts", null, " kW");
-		 public static final Unit Liters = new Unit("Liters", "Volume", " l");
-		 public static final Unit LitersPerHour = new Unit("LitersPerHour", "VolumeFlow", " l/h");
-		 public static final Unit LitersPerMinute = new Unit("LitersPerMinute", "VolumeFlow", " l/min");
-		 public static final Unit LitersPerSquareMeterPerDay = new Unit("LitersPerSquareMeterPerDay", null, " l/(m²*d)");
-		 public static final Unit MegawattHours = new Unit("MegawattHours", "Energy", " MWh");
-		 public static final Unit MetersPerSecond = new Unit("MetersPerSecond", null, " m/s");
-		 public static final Unit Milliamperes = new Unit("Milliamperes", null, " mA");
-		 public static final Unit Milliseconds = new Unit("Milliseconds", null, " ms");
-		 public static final Unit Minutes = new Unit("Minutes", "Time", " min");
-		 public static final Unit None = new Unit("None", null, "");
-		 public static final Unit Ohms = new Unit("Ohms", null, " Ω");
-		 public static final Unit Percent = new Unit("Percent", null, "%");
-		 public static final Unit Seconds = new Unit("Seconds", "Time", " s");
-		 public static final Unit SquareMeters = new Unit("SquareMeters", null, " m²");
-		 public static final Unit Volts = new Unit("Volts", null, " V");
-		 public static final Unit WattHours = new Unit("WattHours", "Energy", " Wh");
-		 public static final Unit Watts = new Unit("Watts", null, " W");
-		 public static final Unit WattsPerSquareMeter = new Unit("WattsPerSquareMeter", null, " W/m²");
-		
-		private String unitCode;
-		
-		private String unitFamily;
-		
-		private String unitText;
-		
-		public Unit(String unitCode, String unitFamily, String unitText) {
-			this.unitCode = unitCode;
-			this.unitFamily = unitFamily;
-			this.unitText = unitText;
-		}
-		
-		public String getUnitCode() {
-			return unitCode;
-		}
-		
-		public String getUnitFamily() {
-			return unitFamily;
-		}
-		
-		public String getUnitText() {
-			return unitText;
-		}
-		
-	}
-	
-	/**
-	 * Instances of the `Text` class can be used for a minimalistic support
-	 * for internationalization (I18N) of field names. 
-	 */
-	public static class Text {
-		
-		private String lang;
-		
-		private String text;
-		
-		public Text(String lang, String text) {
-			this.lang = lang;
-			this.text = text;
-		}
-		
-		public Text(String text) {
-			this("ref", text);
-		}
-		
-		public String getLang() {
-			return lang;
-		}
-		
-		public String getText() {
-			return text;
-		}
-		
-		/**
-		 * Get the text from a list of possible translations that matches the
-		 * given language best.
-		 * 
-		 * @param texts Array of `Text` instances to search in.
-		 * @param lang Language to search for.
-		 * @return Text that matched best or `null` if no text was found.
-		 */
-		public static String getLocalizedText(Text[] texts, String lang) {
-			String result = null;
-			int priority = 0;
-			for (Text text : texts) {
-				int currentPriority;
-				if ((priority < 3) && (lang.equals(text.lang))) {
-					currentPriority = 3;
-				} else if ((priority < 2) && ("all".equals(text.lang))) {
-					currentPriority = 2;
-				} else if ((priority < 1) && ("ref".equals(text.lang))) {
-					currentPriority = 1;
-				} else {
-					currentPriority = -1;
-				}
-				if (priority <= currentPriority) {
-					priority = currentPriority;
-					result = text.text;
-				}
+		public static Formatter getFormatterForType(Type type) {
+			Formatter formatter;
+			switch (type) {
+			case Number:
+				formatter = Formatter.Number;
+				break;
+			case Time:
+				formatter = Formatter.Time;
+				break;
+			case WeekTime:
+				formatter = Formatter.WeekTime;
+				break;
+			case DateTime:
+				formatter = Formatter.DateTime;
+				break;
+			default:
+				formatter = Formatter.Number;
+				break;
 			}
-			return result;
+			return formatter;
 		}
-
+		
 	}
 	
 	/**
@@ -297,25 +195,28 @@ public class Specification {
 		
 		private int selfAddress;
 		
-		private int selfMask;
-		
 		private int peerAddress;
+
+		private String nameEn;
 		
-		private int peerMask;
+		private String nameDe;
 		
-		private Text[] nameTexts;
-		
-		public DeviceSpec(int channel, int selfAddress, int selfMask, int peerAddress, int peerMask, Text[] nameTexts) {
+		private String nameFr;
+
+		public DeviceSpec(int channel, int selfAddress, int peerAddress, SpecificationFile.DeviceTemplate deviceTemplate) {
 			this.channel = channel;
 			this.selfAddress = selfAddress;
-			this.selfMask = selfMask;
 			this.peerAddress = peerAddress;
-			this.peerMask = peerMask;
-			this.nameTexts = nameTexts;
-		}
-		
-		public DeviceSpec(int channel, int selfAddress, int selfMask, int peerAddress, int peerMask, Text nameRefText) {
-			this(channel, selfAddress, selfMask, peerAddress, peerMask, new Text[] { nameRefText });
+			
+			if (deviceTemplate != null) {
+				nameEn = deviceTemplate.getNameLocalizedText(Language.En);
+				nameDe = deviceTemplate.getNameLocalizedText(Language.De);
+				nameFr = deviceTemplate.getNameLocalizedText(Language.Fr);
+			} else {
+				nameEn = String.format("Unknown Device (0x%04X)", selfAddress);
+				nameDe = String.format("Unbekanntes Gerät (0x%04X)", selfAddress);
+				nameFr = nameEn;  // FIXME(daniel): localize this
+			}
 		}
 		
 		public int getChannel() {
@@ -326,105 +227,35 @@ public class Specification {
 			return selfAddress;
 		}
 		
-		public int getSelfMask() {
-			return selfMask;
-		}
-		
 		public int getPeerAddress() {
 			return peerAddress;
 		}
-		
-		public int getPeerMask() {
-			return peerMask;
-		}
-		
-		public Text[] getNameTexts() {
-			return nameTexts;
-		}
-		
-	}
-	
-	/**
-	 * Since the raw value that belongs to a `PacketFieldSpec` can be
-	 * distributed over any number of bytes within the payload data, each
-	 * of the `PacketFieldPartSpec` instances contains information about
-	 * one of these byte positions.
-	 */
-	public static class PacketFieldPartSpec {
-	
-		private int offset;
-		
-		private int bitPos;
 
-		private int mask;
-		
-		private boolean isSigned;
-
-		private long factor;
-		
-		public PacketFieldPartSpec(int offset, int bitPos, int mask, boolean isSigned, long factor) {
-			this.offset = offset;
-			this.bitPos = bitPos;
-			this.mask = mask;
-			this.isSigned = isSigned;
-			this.factor = factor;
-		}
-		
-		public int getOffset() {
-			return offset;
-		}
-		
-		public int getBitPos() {
-			return bitPos;
+		public String getName(Language language) {
+			String name;
+			switch (language) {
+			case En:
+				name = nameEn;
+				break;
+			case De:
+				name = nameDe;
+				break;
+			case Fr:
+				name = nameFr;
+				break;
+			default:
+				name = nameEn;
+				break;
+			}
+			return name;
 		}
 
-		public int getMask() {
-			return mask;
+		public String getName() {
+			return nameEn;
 		}
-		
-		public boolean isSigned() {
-			return isSigned;
-		}
-		
-		public long getFactor() {
-			return factor;
-		}
-		
+
 	}
-	
-	/**
-	 * Instances of the `PacketFieldType` class combine the information of a
-	 * `Type` (e.g. `Type.Number`) with a displaying precision and a physical
-	 * unit.
-	 */
-	public static class PacketFieldType {
-		
-		private Type type;
-		
-		private int precision;
-		
-		private Unit unit;
-		
-		public PacketFieldType(Type type, int precision, Unit unit) {
-			this.type = type;
-			this.precision = precision;
-			this.unit = unit;
-		}
-		
-		public Type getType() {
-			return type;
-		}
-		
-		public int getPrecision() {
-			return precision;
-		}
-		
-		public Unit getUnit() {
-			return unit;
-		}
-		
-	}
-	
+
 	/**
 	 * The `PacketFieldSpec` class contains all information about a single
 	 * data point contained in the payload frame data of a `Packet` VBus
@@ -432,50 +263,50 @@ public class Specification {
 	 */
 	public static class PacketFieldSpec {
 	
-		private String fieldId;
+		private SpecificationFile.PacketTemplateField packetTemplateField;
 		
-		private Text[] nameTexts;
-		
-		private double factor;
-		
-		private PacketFieldType type;
-		
-		private PacketFieldPartSpec[] partSpecs;
-		
-		public PacketFieldSpec(String fieldId, Text[] nameTexts, double factor, PacketFieldType type, PacketFieldPartSpec[] partSpecs) {
-			this.fieldId = fieldId;
-			this.nameTexts = nameTexts;
-			this.factor = factor;
-			this.type = type;
-			this.partSpecs = partSpecs;
+		public PacketFieldSpec(SpecificationFile.PacketTemplateField packetTemplateField) {
+			this.packetTemplateField = packetTemplateField;
 		}
-		
-		public PacketFieldSpec(String fieldId, Text nameRefText, double factor, PacketFieldType type, PacketFieldPartSpec[] partSpecs) {
-			this(fieldId, new Text[] { nameRefText }, factor, type, partSpecs);
-		}
+
+//		public SpecificationFile.PacketTemplateField getPacketTemplateField() {
+//			return packetTemplateField;
+//		}
 		
 		public String getFieldId() {
-			return fieldId;
+			return packetTemplateField.getIdText();
+		}
+
+		public String getName(Language language) {
+			return packetTemplateField.getNameLocalizedText(language);
+		}
+
+		public String getName() {
+			return getName(Language.En);
+		}
+
+		public Unit getUnit() {
+			return packetTemplateField.getUnit();
 		}
 		
-		public Text[] getNameTexts() {
-			return nameTexts;
+		public int getPrecision() {
+			return packetTemplateField.getPrecision();
 		}
 		
 		public double getFactor() {
-			return factor;
+			return getPowerOfTen(- getPrecision());
 		}
-		
-		public PacketFieldType getType() {
-			return type;
+
+		public Type getType() {
+			return packetTemplateField.getType();
 		}
-		
-		public PacketFieldPartSpec[] getPartSpecs() {
-			return partSpecs;
+
+		public PacketTemplateFieldPart[] getParts() {
+			return packetTemplateField.getParts();
 		}
-		
+
 	}
-	
+
 	/**
 	 * The `PacketSpec` class contains all information about the data points
 	 * that are contained in a VBus `Packet` model.
@@ -486,23 +317,28 @@ public class Specification {
 		
 		private int destinationAddress;
 		
-		private int destinationMask;
-		
 		private int sourceAddress;
 		
-		private int sourceMask;
-		
 		private int command;
-		
+
 		private PacketFieldSpec[] fieldSpecs;
 		
-		public PacketSpec(int channel, int destinationAddress, int destinationMask, int sourceAddress, int sourceMask, int command, PacketFieldSpec[] fieldSpecs) {
+		public PacketSpec(int channel, int destinationAddress, int sourceAddress, int command, SpecificationFile.PacketTemplate packetTemplate) {
 			this.channel = channel;
 			this.destinationAddress = destinationAddress;
-			this.destinationMask = destinationMask;
 			this.sourceAddress = sourceAddress;
-			this.sourceMask = sourceMask;
 			this.command = command;
+			
+			PacketFieldSpec[] fieldSpecs;
+			if (packetTemplate != null) {
+				SpecificationFile.PacketTemplateField[] packetTemplateFields = packetTemplate.getFields();
+				fieldSpecs = new PacketFieldSpec [packetTemplateFields.length];
+				for (int index = 0; index < packetTemplateFields.length; index++) {
+					fieldSpecs [index] = new PacketFieldSpec(packetTemplateFields [index]);
+				}
+			} else {
+				fieldSpecs = new PacketFieldSpec [0];
+			}
 			this.fieldSpecs = fieldSpecs;
 		}
 		
@@ -514,28 +350,20 @@ public class Specification {
 			return destinationAddress;
 		}
 		
-		public int getDestinationMask() {
-			return destinationMask;
-		}
-		
 		public int getSourceAddress() {
 			return sourceAddress;
-		}
-		
-		public int getSourceMask() {
-			return sourceMask;
 		}
 		
 		public int getCommand() {
 			return command;
 		}
-		
+
 		public PacketFieldSpec[] getFieldSpecs() {
 			return fieldSpecs;
 		}
 
 	}
-	
+
 	/**
 	 * Instances of the `PacketFieldValue` class join information about the
 	 * VBus `Packet` model instance described by a `PacketSpec` instance
@@ -567,69 +395,66 @@ public class Specification {
 		public PacketSpec getPacketSpec() {
 			return packetSpec;
 		}
-		
+
 		public PacketFieldSpec getPacketFieldSpec() {
 			return packetFieldSpec;
 		}
 		
 		public String getPacketFieldId() {
 			if (packetFieldId == null) {
-				packetFieldId = String.format("%s_%s", packet.getId(), packetFieldSpec.fieldId);
+				packetFieldId = String.format("%s_%s", packet.getId(), packetFieldSpec.getFieldId());
 			}
 			return packetFieldId;
 		}
 		
-		public String getName() {
-			return Text.getLocalizedText(packetFieldSpec.nameTexts, "ref");
+		public String getName(Language language) {
+			return packetFieldSpec.getName(language);
 		}
 
-		public Double getRawValue() {
-			return Specification.this.getRawValue(packetFieldSpec, packet.frameData, 0, packet.frameCount * 4);
+		public String getName() {
+			return getName(Language.En);
+		}
+
+		public Long getRawValueLong() {
+			return Specification.this.getRawValueLong(packetFieldSpec, packet.frameData, 0, packet.frameCount * 4);
+		}
+		
+		public Double getRawValueDouble() {
+			return Specification.this.getRawValueDouble(packetFieldSpec, packet.frameData, 0, packet.frameCount * 4);
 		}
 		
 		public String formatTextValue(Unit unit, Locale locale) {
-			return Specification.this.formatTextValueFromRawValue(packetFieldSpec, getRawValue(), unit, locale);
+			return Specification.this.formatTextValueFromRawValue(packetFieldSpec, getRawValueDouble(), unit, locale);
 		}
 		
 	}
 	
-	private DeviceSpec[] deviceSpecTemplates;
-	
-	private PacketSpec[] packetSpecTemplates;
+	private SpecificationFile specificationFile;
+
+	private HashMap<String, Unit> unitByCode;
 	
 	private HashMap<String, DeviceSpec> deviceSpecById;
 
 	private HashMap<String, PacketSpec> packetSpecById;
-	
+
 	/**
 	 * Creates a `Specification` instances, initializing its members to the given values.
 	 * 
-	 * @param deviceSpecTemplates Array of `DeviceSpec` instances describing known device templates.
-	 * @param packetSpecTemplates Array of `PacketSpec` instances describing known packet templates.
+	 * @param specificationFile The `SpecificationFile` instance to use.
 	 */
-	public Specification(DeviceSpec[] deviceSpecTemplates, PacketSpec[] packetSpecTemplates) {
-		this.deviceSpecTemplates = deviceSpecTemplates;
-		this.packetSpecTemplates = packetSpecTemplates;
+	public Specification(SpecificationFile specFile) {
+		this.specificationFile = specFile;
+		unitByCode = new HashMap<String, Unit>();
 		deviceSpecById = new HashMap<String, Specification.DeviceSpec>();
 		packetSpecById = new HashMap<String, Specification.PacketSpec>();
+		
+		for (Unit unit : specFile.getUnits()) {
+			unitByCode.put(unit.getUnitCodeText(), unit);
+		}
 	}
 	
-	/**
-	 * Get the array of `DeviceSpec` templates.
-	 * 
-	 * @return Array of `DeviceSpec` templates.
-	 */
-	public DeviceSpec[] getDeviceSpecTemplates() {
-		return deviceSpecTemplates;
-	}
-	
-	/**
-	 * Get the array of `PacketSpec` templates.
-	 * 
-	 * @return Array of `PacketSpec` templates.
-	 */
-	public PacketSpec[] getPacketSpecTemplates() {
-		return packetSpecTemplates;
+	public Unit getUnitByCode(String unitCode) {
+		return unitByCode.get(unitCode);
 	}
 	
 	/**
@@ -644,41 +469,9 @@ public class Specification {
 		String id = String.format("%02X_%04X_%04X", channel, selfAddress, peerAddress);
 		DeviceSpec deviceSpec;
 		if (!deviceSpecById.containsKey(id)) {
-			Text[] nameTexts = null;
-			int bestMatch = 0;
+			SpecificationFile.DeviceTemplate deviceTemplate = specificationFile.findDeviceTemplate(selfAddress, peerAddress);
 			
-			for (DeviceSpec template : deviceSpecTemplates) {
-				if ((template.channel >= 0) && (channel != template.channel)) {
-					// skip
-				} else if (((selfAddress ^ template.selfAddress) & template.selfMask) != 0) {
-					// skip
-				} else if (((peerAddress ^ template.peerAddress) & template.peerMask) != 0) {
-					// skip
-				} else {
-					int currentMatch = Integer.bitCount(template.selfMask) + Integer.bitCount(template.peerMask);
-					if (bestMatch < currentMatch) {
-						bestMatch = currentMatch;
-						nameTexts = template.nameTexts;
-					}
-				}
-			}
-			
-			if (nameTexts != null) {
-				nameTexts = Arrays.copyOf(nameTexts, nameTexts.length);
-			} else {
-				nameTexts = new Text[] {
-					new Text("ref", String.format("Unknown device 0x%04X", selfAddress)),
-				};
-			}
-			
-			for (int i = 0; i < nameTexts.length; i++) {
-				Text text = nameTexts [i];
-				if (text.getText().contains("#")) {
-					nameTexts [i] = new Text(text.getLang(), text.getText().replaceAll("#", "#" + (selfAddress & 15)));
-				}
-			}
-			
-			deviceSpec = new DeviceSpec(channel, selfAddress, 0xFFFF, peerAddress, 0xFFFF, nameTexts);
+			deviceSpec = new DeviceSpec(channel, selfAddress, peerAddress, deviceTemplate);
 			deviceSpecById.put(id, deviceSpec);
 		} else {
 			deviceSpec = deviceSpecById.get(id);
@@ -719,30 +512,9 @@ public class Specification {
 		String id = String.format("%02X_%04X_%04X_10_%04X", channel, destinationAddress, sourceAddress, command);
 		PacketSpec packetSpec;
 		if (!packetSpecById.containsKey(id)) {
-			PacketFieldSpec[] fieldSpecs = null;
-			int bestMatch = 0;
-			
-			for (PacketSpec template : packetSpecTemplates) {
-				if ((template.channel >= 0) && (channel != template.channel)) {
-					// skip
-				} else if (((destinationAddress ^ template.destinationAddress) & template.destinationMask) != 0) {
-					// skip
-				} else if (((sourceAddress ^ template.sourceAddress) & template.sourceMask) != 0) {
-					// skip
-				} else {
-					int currentMatch = Integer.bitCount(template.destinationMask) + Integer.bitCount(template.sourceMask);
-					if (bestMatch < currentMatch) {
-						bestMatch = currentMatch;
-						fieldSpecs = template.fieldSpecs;
-					}
-				}
-			}
+			SpecificationFile.PacketTemplate packetTemplate = specificationFile.findPacketTemplate(destinationAddress, sourceAddress, command);
 
-			if (fieldSpecs == null) {
-				fieldSpecs = new PacketFieldSpec[0];
-			}
-
-			packetSpec = new PacketSpec(channel, destinationAddress, 0xFFFF, sourceAddress, 0xFFFF, command, fieldSpecs);
+			packetSpec = new PacketSpec(channel, destinationAddress, sourceAddress, command, packetTemplate);
 			packetSpecById.put(id,  packetSpec);
 		} else {
 			packetSpec = packetSpecById.get(id);
@@ -771,7 +543,7 @@ public class Specification {
 		PacketFieldSpec result = null;
 		
 		for (PacketFieldSpec pfs : packetSpec.fieldSpecs) {
-			if (pfs.fieldId.equals(fieldId)) {
+			if (pfs.getFieldId().equals(fieldId)) {
 				result = pfs;
 				break;
 			}
@@ -781,7 +553,7 @@ public class Specification {
 	}
 	
 	/**
-	 * Get optional raw value from `Packet` payload data.
+	 * Get optional raw value from `Packet` payload data as a Long.
 	 * 
 	 * @param pfs `PacketFieldSpec` instance of field to get value for.
 	 * @param buffer Byte array containing `Packet` payload data.
@@ -789,35 +561,64 @@ public class Specification {
 	 * @param length Length of the buffer.
 	 * @return The boxed raw value or `null` if the buffer was too small for a value. 
 	 */
-	public Double getRawValue(PacketFieldSpec pfs, byte[] buffer, int start, int length) {
+	public Long getRawValueLong(PacketFieldSpec pfs, byte[] buffer, int start, int length) {
 		long rawValue = 0;
 		int partCount = 0;
 		
-		for (PacketFieldPartSpec pfps : pfs.partSpecs) {
-			if ((pfps.offset >= 0) && (pfps.offset < length)) {
-				long partRawValue = buffer [start + pfps.offset];
-				if (!pfps.isSigned) {
+		for (PacketTemplateFieldPart ptfp : pfs.getParts()) {
+			int offset = ptfp.getOffset();
+			if ((offset >= 0) && (offset < length)) {
+				long partRawValue = buffer [start + offset];
+				if (!ptfp.isSigned()) {
 					partRawValue &= 255;
 				}
-				rawValue += partRawValue * pfps.factor;
+				if (ptfp.getMask() != 0xFF) {
+					partRawValue &= ptfp.getMask();
+				}
+				if (ptfp.getBitPos() > 0) {
+					partRawValue >>= ptfp.getBitPos();
+				}
+				rawValue += partRawValue * ptfp.getFactor();
 				partCount++;
 			}
 		}
 		
-		return (partCount > 0) ? new Double(rawValue * pfs.factor) : null;
+		return (partCount > 0) ? new Long(rawValue) : null;
+	}
+
+	/**
+	 * Get optional raw value from `Packet` payload data as a Double.
+	 * 
+	 * @param pfs `PacketFieldSpec` instance of field to get value for.
+	 * @param buffer Byte array containing `Packet` payload data.
+	 * @param start Start index into the buffer.
+	 * @param length Length of the buffer.
+	 * @return The boxed raw value or `null` if the buffer was too small for a value. 
+	 */
+	public Double getRawValueDouble(PacketFieldSpec pfs, byte[] buffer, int start, int length) {
+		Long rawValueLong = getRawValueLong(pfs, buffer, start, length);
+		Double rawValueDouble;
+		if (rawValueLong != null) {
+			rawValueDouble = new Double(rawValueLong.doubleValue() * pfs.getFactor());
+		} else {
+			rawValueDouble = null;
+		}
+		return rawValueDouble;
 	}
 
 	protected String formatTextValueFromRawValueInternal(double rawValue, Unit unit, Locale locale, Type rootType, int precision, Unit defaultUnit) {
 		String unitText;
 		if (unit != null) {
-			unitText = unit.unitText;
+			unitText = unit.getUnitTextText();
 		} else if (defaultUnit != null) {
-			unitText = defaultUnit.unitText;
+			unitText = defaultUnit.getUnitTextText();
 		} else {
 			unitText = "";
 		}
 		
-		String textValue = rootType.formatTextValue(rawValue, locale, precision);
+		Formatter formatter = Formatter.getFormatterForType(rootType);
+
+		String textValue = formatter.formatTextValue(rawValue, locale, precision);
 		
 		return textValue + unitText;
 	}
@@ -832,7 +633,7 @@ public class Specification {
 	 * @return Textual representation of the raw value.
 	 */
 	public String formatTextValueFromRawValue(PacketFieldSpec pfs, double rawValue, Unit unit, Locale locale) {
-		String textValue = formatTextValueFromRawValueInternal(rawValue, unit, locale, pfs.type.type, pfs.type.precision, pfs.type.unit);
+		String textValue = formatTextValueFromRawValueInternal(rawValue, unit, locale, pfs.getType(), pfs.getPrecision(), pfs.getUnit());
 		return textValue;
 	}
 	
@@ -884,6 +685,33 @@ public class Specification {
 		}
 		
 		return pfvList.toArray(new PacketFieldValue [pfvList.size()]);
+	}
+	
+	public static double getPowerOfTen(int exponent) {
+		double result;
+		switch (exponent) {
+		case -9: result = 0.000000001; break;
+		case -8: result = 0.00000001; break;
+		case -7: result = 0.0000001; break;
+		case -6: result = 0.000001; break;
+		case -5: result = 0.00001; break;
+		case -4: result = 0.0001; break;
+		case -3: result = 0.001; break;
+		case -2: result = 0.01; break;
+		case -1: result = 0.1; break;
+		case  0: result = 1; break;
+		case  1: result = 10; break;
+		case  2: result = 100; break;
+		case  3: result = 1000; break;
+		case  4: result = 10000; break;
+		case  5: result = 100000; break;
+		case  6: result = 1000000; break;
+		case  7: result = 10000000; break;
+		case  8: result = 100000000; break;
+		case  9: result = 1000000000; break;
+		default: result = Math.pow(10, exponent); break;
+		}
+		return result;
 	}
 	
 }
