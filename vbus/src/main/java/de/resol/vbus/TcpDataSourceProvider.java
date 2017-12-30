@@ -233,7 +233,7 @@ public class TcpDataSourceProvider extends DataSourceProvider {
 		
 		String vendor = null, product = null, serial = null, version = null, build = null, name = null, features = null;
 
-		Pattern re = Pattern.compile("^([^ =]+)\\s*=\\s*\"(.*)\"$");
+		Pattern re = Pattern.compile("^([^ =\t]+)\\s*=\\s*\"(.*)\"$");
 
 		String line;
 		while ((line = in.readLine()) != null) {
