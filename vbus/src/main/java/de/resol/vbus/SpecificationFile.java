@@ -477,9 +477,16 @@ public class SpecificationFile {
 	public static SpecificationFile fromStream(InputStream is) {
 		try {
 			byte[] bytes = new byte [1000000];
-			int length = is.read(bytes);
+			int offset = 0;
+			while (offset < bytes.length) {
+				int readLength = is.read(bytes, offset, bytes.length - offset);
+				if (readLength < 0) {
+					break;
+				}
+				offset += readLength;
+			}
 
-			return fromBytes(bytes, 0, length);
+			return fromBytes(bytes, 0, offset);
 		} catch (Throwable t) {
 			t.printStackTrace();
 			return null;
