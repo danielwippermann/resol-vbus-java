@@ -551,6 +551,15 @@ public class Specification {
 		
 		return result;
 	}
+    
+	/**
+	  * Get the list of known units.
+	  *
+	  * @return array of known Units.
+	  */
+	  public Unit[] getUnits() {
+		return specificationFile.getUnits();
+	  }
 	
 	/**
 	 * Get optional raw value from `Packet` payload data as a Long.
