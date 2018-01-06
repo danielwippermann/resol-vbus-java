@@ -73,8 +73,8 @@ public class Specification {
 		return defaultSpecification;
 	}
 
-	private static DateFormat createUtcDateFormat(String format) {
-		SimpleDateFormat sdf = new SimpleDateFormat(format);
+	private static DateFormat createUtcDateFormat(String format, Locale locale) {
+		SimpleDateFormat sdf = new SimpleDateFormat(format, locale);
 		sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 		return sdf;
 	}
@@ -102,9 +102,9 @@ public class Specification {
 		
 		protected abstract String formatTextValue(double rawValue, Locale locale, int precision);
 		
-		private static final DateFormat TIME_FORMATTER = createUtcDateFormat("HH:mm"); 
-		private static final DateFormat WEEKTIME_FORMATTER = createUtcDateFormat("EEE,HH:mm"); 
-		private static final DateFormat DATETIME_FORMATTER = createUtcDateFormat("yyyy-MM-dd HH:mm:ss");
+		private static final String TIME_FORMAT_STRING = "HH:mm"; 
+		private static final String WEEKTIME_FORMAT_STRING = "EEE,HH:mm"; 
+		private static final String DATETIME_FORMAT_STRING = "yyyy-MM-dd HH:mm:ss";
 
 		public static final Formatter Number = new Formatter("Number") {
 			
@@ -135,7 +135,7 @@ public class Specification {
 			@Override
 			protected String formatTextValue(double rawValue, Locale locale, int precision) {
 				String textValue;
-				textValue = TIME_FORMATTER.format(new Date(Math.round(rawValue) * 60000));
+				textValue = createUtcDateFormat(TIME_FORMAT_STRING, locale).format(new Date(Math.round(rawValue) * 60000));
 				return textValue;
 			}
 
@@ -146,7 +146,7 @@ public class Specification {
 			@Override
 			protected String formatTextValue(double rawValue, Locale locale, int precision) {
 				String textValue;
-				textValue = WEEKTIME_FORMATTER.format(new Date(Math.round(rawValue + 5760) * 60000));
+				textValue = createUtcDateFormat(WEEKTIME_FORMAT_STRING, locale).format(new Date(Math.round(rawValue + 5760) * 60000));
 				return textValue;
 			}
 
@@ -157,7 +157,7 @@ public class Specification {
 			@Override
 			protected String formatTextValue(double rawValue, Locale locale, int precision) {
 				String textValue;
-				textValue = DATETIME_FORMATTER.format(new Date(Math.round(rawValue + 978307200) * 1000));
+				textValue = createUtcDateFormat(DATETIME_FORMAT_STRING, locale).format(new Date(Math.round(rawValue + 978307200) * 1000));
 				return textValue;
 			}
 

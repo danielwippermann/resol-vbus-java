@@ -380,8 +380,8 @@ public class SpecificationTest {
 		assertEquals("00:00", spec.formatTextValueFromRawValueInternal(0, unitNone, locale, Type.Time, 0, null));
 		assertEquals("23:59", spec.formatTextValueFromRawValueInternal(1439, unitNone, locale, Type.Time, 0, null));
 
-		assertEquals("Mo,00:00", spec.formatTextValueFromRawValueInternal(0, unitNone, locale, Type.WeekTime, 0, null));
-		assertEquals("So,23:59", spec.formatTextValueFromRawValueInternal(10079, unitNone, locale, Type.WeekTime, 0, null));
+		assertEquals("Mon,00:00", spec.formatTextValueFromRawValueInternal(0, unitNone, locale, Type.WeekTime, 0, null));
+		assertEquals("Sun,23:59", spec.formatTextValueFromRawValueInternal(10079, unitNone, locale, Type.WeekTime, 0, null));
 
 		assertEquals("2001-01-01 00:00:00", spec.formatTextValueFromRawValueInternal(0, unitNone, locale, Type.DateTime, 0, null));
 		assertEquals("2015-01-01 12:01:00", spec.formatTextValueFromRawValueInternal(441806460, unitNone, locale, Type.DateTime, 0, null));
