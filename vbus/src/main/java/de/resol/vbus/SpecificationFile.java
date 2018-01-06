@@ -26,6 +26,7 @@ package de.resol.vbus;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class SpecificationFile {
 
@@ -178,6 +179,108 @@ public class SpecificationFile {
 		
 	}
 	
+	public class EnumVariant {
+		
+		private int enumVariantId;
+		
+		private String enumVariantCode;
+
+		private String textEn;
+		
+		private String textDe;
+		
+		private String textFr;
+		
+		public EnumVariant(int enumVariantId, String enumVariantCode, String textEn, String textDe, String textFr) {
+			this.enumVariantId = enumVariantId;
+			this.enumVariantCode = enumVariantCode;
+			this.textEn = textEn;
+			this.textDe = textDe;
+			this.textFr = textFr;
+		}
+		
+		public int getEnumVariantId() {
+			return enumVariantId;
+		}
+		
+		public String getEnumVariantCode() {
+			return enumVariantCode;
+		}
+		
+		public String getText(Language language) {
+			String result;
+			switch (language) {
+			case En: result = textEn; break;
+			case De: result = textDe; break;
+			case Fr: result = textFr; break;
+			default: result = textEn; break;
+			}
+			return result;
+		}
+		
+		public String getText() {
+			return textEn;
+		}
+
+	}
+	
+	public class Enum {
+		
+		private int enumId;
+		
+		private long[] values;
+		
+		private EnumVariant[] enumVariants;
+		
+		/**
+		 * Creates a new Enum using the provided information.
+		 * 
+		 * @param enumId A numeric identifier. The identifier is NOT guaranteed to stay the same between VSF versions.
+		 * @param values A sorted list of values matching the entries in the `enumVariants` array.
+		 * @param enumVariants A list of EnumVariants matching the entries in the `values` array.
+		 */
+		protected Enum(int enumId, long[] values, EnumVariant[] enumVariants) {
+			this.enumId = enumId;
+			this.values = values;
+			this.enumVariants = enumVariants;
+		}
+		
+		/**
+		 * Return the numeric identifier of the Enum.
+		 * 
+		 * @return The numeric identifier. The identifier is NOT guaranteed to stay the same between VSF versions.
+		 */
+		public int getEnumId() {
+			return enumId;
+		}
+		
+		public long[] getValues() {
+			return values;
+		}
+		
+		public EnumVariant[] getEnumVariants() {
+			return enumVariants;
+		}
+
+		/**
+		 * Return the EnumVariant matching the provided `value`.
+		 * 
+		 * @param value The value to get the `EnumVariant` for.
+		 * @return The `EnumVariant` instance or `null` if the provided `value` is not associated with a enum variant.
+		 */
+		public EnumVariant getEnumVariantForValue(long value) {
+			int index = Arrays.binarySearch(values, value);
+			EnumVariant enumVariant;
+			if (index >= 0) {
+				enumVariant = enumVariants [index];
+			} else {
+				enumVariant = null;
+			}
+			return enumVariant;
+		}
+
+	}
+
 	public class PacketTemplate {
 		int destinationAddress;
 		int destinationMask;
@@ -230,6 +333,7 @@ public class SpecificationFile {
 		int precision;
 		int typeId;
 		ArrayList<PacketTemplateFieldPart> parts;
+		int enumId;
 		
 		public PacketTemplateField() {
 			parts = new ArrayList<PacketTemplateFieldPart>();
@@ -257,6 +361,10 @@ public class SpecificationFile {
 
 		public PacketTemplateFieldPart[] getParts() {
 			return (PacketTemplateFieldPart[]) parts.toArray(new PacketTemplateFieldPart[parts.size()]);
+		}
+		
+		public Enum getEnum() {
+			return getEnumById(enumId);
 		}
 
 	}
@@ -441,6 +549,8 @@ public class SpecificationFile {
 	private ArrayList<Unit> units;
 	private ArrayList<DeviceTemplate> deviceTemplates;
 	private ArrayList<PacketTemplate> packetTemplates;
+	private ArrayList<EnumVariant> enumVariants;
+	private ArrayList<Enum> enums;
 	
 	public SpecificationFile() {
 		texts = new ArrayList<String>();
@@ -448,6 +558,10 @@ public class SpecificationFile {
 		units = new ArrayList<Unit>();
 		deviceTemplates = new ArrayList<DeviceTemplate>();
 		packetTemplates = new ArrayList<PacketTemplate>();
+		enumVariants = new ArrayList<EnumVariant>();
+		enums = new ArrayList<Enum>();
+		
+		forgeEnumVariantsAndEnums();
 	}
 	
 	public int getDatecode() {
@@ -474,6 +588,14 @@ public class SpecificationFile {
 		return (PacketTemplate[]) packetTemplates.toArray(new PacketTemplate[packetTemplates.size()]);
 	}
 	
+	public EnumVariant[] getEnumVariants() {
+		return (EnumVariant[]) enumVariants.toArray(new EnumVariant[enumVariants.size()]);
+	}
+	
+	public Enum[] getEnums() {
+		return (Enum[]) enums.toArray(new Enum[enums.size()]);
+	}
+
 	public static SpecificationFile fromStream(InputStream is) {
 		try {
 			byte[] bytes = new byte [1000000];
@@ -607,6 +729,18 @@ public class SpecificationFile {
 			}
 		}
 		return null;
+	}
+	
+	Enum getEnumById(int id) {
+		if (id == 0) {
+			return null;
+		}
+		for (Enum e : enums) {
+			if (e.enumId == id) {
+				return e;
+			}
+		}
+		throw new java.lang.Error("Unsupported enum ID");
 	}
 	
 	private boolean checkTextIndex(int index) {
@@ -804,6 +938,7 @@ public class SpecificationFile {
 
 		for (int index = 0; index < fieldCount; index++) {
 			PacketTemplateField field = parsePacketTemplateFieldBlock(bytes, fieldTableOffset, index);
+			forgeEnumForPacketTemplateField(packetTemplate, field);
 			packetTemplate.fields.add(field);
 		}
 
@@ -862,6 +997,88 @@ public class SpecificationFile {
 		part.isSigned = isSigned;
 		part.factor = factor;
 		return part;
+	}
+	
+	private EnumVariant forgeEnumVariant(String idCode, String textEn, String textDe) {
+		EnumVariant enumVariant = new EnumVariant(enumVariants.size(), idCode, textEn, textDe, textEn);
+		enumVariants.add(enumVariant);
+		return enumVariant;
+	}
+	
+	private Enum forgeEnum(int enumId, long[] values, EnumVariant[] variants) {
+		if (values.length != variants.length) {
+			throw new java.lang.Error("Enum values and variants must match");
+		}
+
+		for (int i = 1; i < values.length; i++) {
+			if (values [i - 1] >= values [i]) {
+				throw new java.lang.Error("Enum values must be sorted and unique");
+			}
+		}
+
+		Enum enum_ = new Enum(enumId, values, variants);
+		enums.add(enum_);
+		return enum_;
+	}
+	
+	private void forgeEnumVariantsAndEnums() {
+		EnumVariant evFree = forgeEnumVariant("Free", "Free", "Frei");
+		EnumVariant evRuntime = forgeEnumVariant("Runtime", "Runtime", "Laufzeit");
+		EnumVariant evDeactivated = forgeEnumVariant("Deactivated", "Deactivated", "Deaktiviert");
+		EnumVariant evDefective = forgeEnumVariant("Defective", "Defective", "Defekt");
+		EnumVariant evAutoAdjustment = forgeEnumVariant("AutoAdjustment", "Auto adjust.", "Autojust.");
+		EnumVariant evRthOff = forgeEnumVariant("RoomThermostatOff", "RTH off", "RTH aus");
+		EnumVariant evChimneySweeper = forgeEnumVariant("ChimneySweeper", "Chimney sw.", "Schornsteinfeger");
+		EnumVariant evDhwPriority = forgeEnumVariant("DhwPriority", "DHW priority", "BW-Vorrang");
+		EnumVariant evAntifreeze = forgeEnumVariant("Antifreeze", "Antifreeze", "Frostschutz");
+		EnumVariant evParty = forgeEnumVariant("Party", "Party", "Party");
+		EnumVariant evSummer = forgeEnumVariant("Summer", "Summer", "Sommer");
+		EnumVariant evRemoteControlOff = forgeEnumVariant("RemoteControlOff", "RC off", "FV aus");
+		EnumVariant evHeatingCircuitOff = forgeEnumVariant("HeatingCircuitOff", "HC off", "HK aus");
+		EnumVariant evNightOperation = forgeEnumVariant("NightOperation", "Night oper.", "Nachtbetr.");
+		EnumVariant evDayOperation = forgeEnumVariant("DayOperation", "Day oper.", "Tagbetr.");
+		EnumVariant evHoliday = forgeEnumVariant("Holiday", "Holiday", "Urlaub");
+		EnumVariant evScreed = forgeEnumVariant("Screed", "Screed", "Estrich");
+		EnumVariant evBlockingProtection = forgeEnumVariant("BlockingProtection", "Blocking protection", "Blockierschutz");
+		EnumVariant evCooling = forgeEnumVariant("Cooling", "Cooling", "Kühlung");
+		EnumVariant evHeatDump = forgeEnumVariant("HeatDump", "Heat dump", "Überwärmeabfuhr");
+		EnumVariant evBreak = forgeEnumVariant("Break", "Break", "Pause");
+		
+		// MxHeatingCircuitOperatingState
+		forgeEnum(0xa00705bd, new long[] {
+			0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+		}, new EnumVariant[] {
+			evFree,  // 0
+			evRuntime,  // 1
+			evDeactivated,  // 2
+			evDefective,  // 3
+			evAutoAdjustment,  // 4
+			evRthOff,  // 5
+			evChimneySweeper,  // 6
+			evDhwPriority,  // 7
+			evAntifreeze,  // 8
+			evParty,  // 9
+			evSummer,  // 10
+			evRemoteControlOff,  // 11
+			evHeatingCircuitOff,  // 12
+			evNightOperation,  // 13
+			evDayOperation,  // 14
+			evHoliday,  // 15
+			evScreed,  // 16
+			evBlockingProtection,  // 17
+			evCooling,  // 18
+			evHeatDump,  // 19
+			evBreak,  // 20			
+		});
+	}
+
+	private void forgeEnumForPacketTemplateField(PacketTemplate pt, PacketTemplateField ptf) {
+		if ((pt.destinationAddress == 0x0010) && (pt.destinationMask == 0xFFFF) && (pt.sourceAddress == 0x7E20) && (pt.sourceMask == 0xFFF0) && (pt.command == 0x0100)) {
+			if (getTextByIndex(ptf.idTextIndex).equals("002_1_0")) {
+				// 00_0010_7E20_10_0100_002_1_0: Operating state
+				ptf.enumId = 0xa00705bd;  // MxHeatingCircuitOperatingState
+			}
+		}
 	}
 	
 }

@@ -30,6 +30,8 @@ import java.io.InputStream;
 import org.junit.Test;
 
 import de.resol.vbus.SpecificationFile.DeviceTemplate;
+import de.resol.vbus.SpecificationFile.Enum;
+import de.resol.vbus.SpecificationFile.EnumVariant;
 import de.resol.vbus.SpecificationFile.Language;
 import de.resol.vbus.SpecificationFile.LocalizedText;
 import de.resol.vbus.SpecificationFile.PacketTemplate;
@@ -8394,4 +8396,105 @@ public class SpecificationFileTest {
 		t.assertEndOfPacketTemplateFieldTable();
 	}
 	
+	class EnumVariantTester {
+		
+		int index = 0;
+		
+		void assertNextEnumVariantEquals(String enumVariantCode, String textEn, String textDe) {
+			EnumVariant enumVariant = specFile.getEnumVariants() [index++];
+			assertEquals(enumVariantCode, enumVariant.getEnumVariantCode());
+			assertEquals(textEn, enumVariant.getText(Language.En));
+			assertEquals(textDe, enumVariant.getText(Language.De));
+		}
+
+		void assertEndOfEnumVariantTable() {
+			assertEquals(index, specFile.getEnumVariants().length);
+		}
+
+	}
+
+	@Test
+	public void testEnumVariants() throws Exception {
+		EnumVariantTester t = new EnumVariantTester();
+		t.assertNextEnumVariantEquals("Free", "Free", "Frei");
+		t.assertNextEnumVariantEquals("Runtime", "Runtime", "Laufzeit");
+		t.assertNextEnumVariantEquals("Deactivated", "Deactivated", "Deaktiviert");
+		t.assertNextEnumVariantEquals("Defective", "Defective", "Defekt");
+		t.assertNextEnumVariantEquals("AutoAdjustment", "Auto adjust.", "Autojust.");
+		t.assertNextEnumVariantEquals("RoomThermostatOff", "RTH off", "RTH aus");
+		t.assertNextEnumVariantEquals("ChimneySweeper", "Chimney sw.", "Schornsteinfeger");
+		t.assertNextEnumVariantEquals("DhwPriority", "DHW priority", "BW-Vorrang");
+		t.assertNextEnumVariantEquals("Antifreeze", "Antifreeze", "Frostschutz");
+		t.assertNextEnumVariantEquals("Party", "Party", "Party");
+		t.assertNextEnumVariantEquals("Summer", "Summer", "Sommer");
+		t.assertNextEnumVariantEquals("RemoteControlOff", "RC off", "FV aus");
+		t.assertNextEnumVariantEquals("HeatingCircuitOff", "HC off", "HK aus");
+		t.assertNextEnumVariantEquals("NightOperation", "Night oper.", "Nachtbetr.");
+		t.assertNextEnumVariantEquals("DayOperation", "Day oper.", "Tagbetr.");
+		t.assertNextEnumVariantEquals("Holiday", "Holiday", "Urlaub");
+		t.assertNextEnumVariantEquals("Screed", "Screed", "Estrich");
+		t.assertNextEnumVariantEquals("BlockingProtection", "Blocking protection", "Blockierschutz");
+		t.assertNextEnumVariantEquals("Cooling", "Cooling", "Kühlung");
+		t.assertNextEnumVariantEquals("HeatDump", "Heat dump", "Überwärmeabfuhr");
+		t.assertNextEnumVariantEquals("Break", "Break", "Pause");
+		t.assertEndOfEnumVariantTable();
+	}
+	
+	class EnumTester {
+		
+		int index = 0;
+		
+		void assertNextEnumEquals(int enumId, int variantsCount) {
+			Enum enum_ = specFile.getEnums() [index++];
+			assertEquals(enumId, enum_.getEnumId());
+			assertEquals(variantsCount, enum_.getValues().length);
+			assertEquals(variantsCount, enum_.getEnumVariants().length);
+		}
+
+		void assertEndOfEnumTable() {
+			assertEquals(index, specFile.getEnums().length);
+		}
+
+	}
+
+	@Test
+	public void testEnums() throws Exception {
+		EnumTester t = new EnumTester();
+		t.assertNextEnumEquals(0xa00705bd, 21);
+		t.assertEndOfEnumTable();
+	}
+
+	@Test
+	public void testGetEnumById() throws Exception {
+		Enum enum0 = specFile.getEnumById(0);
+		assertNull(enum0);
+		
+		Enum enumMxHeatingCircuitOperatingState = specFile.getEnumById(0xa00705bd);
+		assertNotNull(enumMxHeatingCircuitOperatingState);
+		
+		Throwable caught;
+		try {
+			specFile.getEnumById(-1);
+			caught = null;
+		} catch (Throwable t) {
+			caught = t;
+		}
+		
+		assertNotNull(caught);
+		assertEquals("Unsupported enum ID", caught.getMessage());
+	}
+	
+	@Test
+	public void testEnumGetEnumVariantForRawValue() throws Exception {
+		Enum enumMxHeatingCircuitOperatingState = specFile.getEnumById(0xa00705bd);
+		assertNotNull(enumMxHeatingCircuitOperatingState);
+
+		EnumVariant enumVariant1 = enumMxHeatingCircuitOperatingState.getEnumVariantForValue(13);
+		
+		assertEquals("NightOperation", enumVariant1.getEnumVariantCode());
+		
+		EnumVariant enumVariant2 = enumMxHeatingCircuitOperatingState.getEnumVariantForValue(-1);
+		
+		assertNull(enumVariant2);
+	}
 }
