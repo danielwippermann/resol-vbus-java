@@ -31,6 +31,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import de.resol.vbus.SpecificationFile.Enum;
+import de.resol.vbus.SpecificationFile.EnumVariant;
 import de.resol.vbus.SpecificationFile.Language;
 import de.resol.vbus.SpecificationFile.PacketTemplateFieldPart;
 import de.resol.vbus.SpecificationFile.Type;
@@ -265,7 +267,7 @@ public class Specification {
 	
 		private SpecificationFile.PacketTemplateField packetTemplateField;
 		
-		public PacketFieldSpec(SpecificationFile.PacketTemplateField packetTemplateField) {
+		protected PacketFieldSpec(SpecificationFile.PacketTemplate packetTemplate, SpecificationFile.PacketTemplateField packetTemplateField) {
 			this.packetTemplateField = packetTemplateField;
 		}
 
@@ -304,6 +306,17 @@ public class Specification {
 		public PacketTemplateFieldPart[] getParts() {
 			return packetTemplateField.getParts();
 		}
+		
+		public EnumVariant getEnumVariantForRawValue(long rawValue) {
+			Enum enum_ = packetTemplateField.getEnum();
+			EnumVariant enumVariant;
+			if (enum_ != null) {
+				enumVariant = enum_.getEnumVariantForValue(rawValue);
+			} else {
+				enumVariant = null;
+			}
+			return enumVariant;
+		}
 
 	}
 
@@ -334,7 +347,7 @@ public class Specification {
 				SpecificationFile.PacketTemplateField[] packetTemplateFields = packetTemplate.getFields();
 				fieldSpecs = new PacketFieldSpec [packetTemplateFields.length];
 				for (int index = 0; index < packetTemplateFields.length; index++) {
-					fieldSpecs [index] = new PacketFieldSpec(packetTemplateFields [index]);
+					fieldSpecs [index] = new PacketFieldSpec(packetTemplate, packetTemplateFields [index]);
 				}
 			} else {
 				fieldSpecs = new PacketFieldSpec [0];
@@ -425,6 +438,32 @@ public class Specification {
 		
 		public String formatTextValue(Unit unit, Locale locale) {
 			return Specification.this.formatTextValueFromRawValue(packetFieldSpec, getRawValueDouble(), unit, locale);
+		}
+		
+		public EnumVariant getEnumVariant() {
+			Long rawValue = getRawValueLong();
+			EnumVariant enumVariant;
+			if (rawValue != null) {
+				enumVariant = packetFieldSpec.getEnumVariantForRawValue(rawValue.longValue());
+			} else {
+				enumVariant = null;
+			}
+			return enumVariant;
+		}
+		
+		public String formatText(Unit unit, Locale locale, Language language) {
+			EnumVariant enumVariant = getEnumVariant();
+			String result;
+			if (enumVariant != null) {
+				result = enumVariant.getText(language);
+			} else {
+				result = formatTextValue(unit, locale);
+			}
+			return result;
+		}
+		
+		public String formatText() {
+			return formatText(null, null, Language.En);
 		}
 		
 	}

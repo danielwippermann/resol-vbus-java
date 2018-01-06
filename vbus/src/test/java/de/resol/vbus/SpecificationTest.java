@@ -99,7 +99,7 @@ public class SpecificationTest {
 		SpecificationFile.PacketTemplate packetTemplate1 = specFile.findPacketTemplate(0x0010, 0x7E11, 0x0100);
 		SpecificationFile.PacketTemplateField packetTemplateField1 = packetTemplate1.getFields() [0];
 		
-		PacketFieldSpec testSpec1 = new PacketFieldSpec(packetTemplateField1);
+		PacketFieldSpec testSpec1 = new PacketFieldSpec(packetTemplate1, packetTemplateField1);
 		
 		assertEquals("000_2_0", testSpec1.getFieldId());
 		assertEquals("Temperatur Sensor 1", testSpec1.getName(Language.De));
@@ -436,6 +436,29 @@ public class SpecificationTest {
 		PacketFieldValue[] testPfvs2 = spec.getPacketFieldValuesForHeaders(refHeaders2);
 		
 		assertEquals(true, testPfvs2.length == 0);
+	}
+
+	@Test
+	public void testPacketFieldValueFormatText() throws Exception {
+		byte[] refBuffer1 = new byte[] { 0, 0, 13, 0 };
+		
+		Header[] refHeaders1 = new Header[] {
+			new Packet(0, 0, 0x0010, 0x7E21, 0x0100, 1, refBuffer1),
+			new Datagram(0, 0, 0x0010, 0x7E11, 0x0500, 0, 0),
+		};
+
+		PacketFieldValue[] testPfvs1 = spec.getPacketFieldValuesForHeaders(refHeaders1);
+		
+		assertEquals(true, testPfvs1.length >= 2);
+		
+		PacketFieldValue testPfv1 = testPfvs1 [1];
+		assertEquals("00_0010_7E21_10_0100_002_1_0", testPfv1.getPacketFieldId());
+		assertEquals(13, testPfv1.getRawValueLong().longValue());
+		assertEquals(13, testPfv1.getRawValueDouble().doubleValue(), 0.001);
+		assertEquals("13", testPfv1.formatTextValue(null, null));
+		assertEquals("Night oper.", testPfv1.formatText(null, null, Language.En));
+		assertEquals("Nachtbetr.", testPfv1.formatText(null, null, Language.De));
+		assertEquals("Night oper.", testPfv1.formatText(null, null, Language.Fr));
 	}
 
 }
