@@ -102,6 +102,8 @@ public class Specification {
 		
 		protected abstract String formatTextValue(double rawValue, Locale locale, int precision);
 		
+		protected abstract Date convertToDate(double rawValue);
+		
 		private static final String TIME_FORMAT_STRING = "HH:mm"; 
 		private static final String WEEKTIME_FORMAT_STRING = "EEE,HH:mm"; 
 		private static final String DATETIME_FORMAT_STRING = "yyyy-MM-dd HH:mm:ss";
@@ -128,6 +130,11 @@ public class Specification {
 				return textValue;
 			}
 			
+			@Override
+			protected Date convertToDate(double rawValue) {
+				return null;
+			}
+
 		};
 		
 		public static final Formatter Time = new Formatter("Time") {
@@ -137,6 +144,11 @@ public class Specification {
 				String textValue;
 				textValue = createUtcDateFormat(TIME_FORMAT_STRING, locale).format(new Date(Math.round(rawValue) * 60000));
 				return textValue;
+			}
+
+			@Override
+			protected Date convertToDate(double rawValue) {
+				return new Date(Math.round(rawValue + 16305120) * 60000);
 			}
 
 		};
@@ -150,6 +162,11 @@ public class Specification {
 				return textValue;
 			}
 
+			@Override
+			protected Date convertToDate(double rawValue) {
+				return new Date(Math.round(rawValue + 16305120) * 60000);
+			}
+
 		};
 
 		public static final Formatter DateTime = new Formatter("DateTime") {
@@ -159,6 +176,11 @@ public class Specification {
 				String textValue;
 				textValue = createUtcDateFormat(DATETIME_FORMAT_STRING, locale).format(new Date(Math.round(rawValue + 978307200) * 1000));
 				return textValue;
+			}
+			
+			@Override
+			protected Date convertToDate(double rawValue) {
+				return new Date(Math.round(rawValue + 978307200) * 1000);
 			}
 
 		};

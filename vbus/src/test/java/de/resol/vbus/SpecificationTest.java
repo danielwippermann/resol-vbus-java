@@ -25,7 +25,10 @@ package de.resol.vbus;
 
 import static org.junit.Assert.*;
 
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import org.junit.Test;
 
@@ -74,10 +77,31 @@ public class SpecificationTest {
 				// TODO Auto-generated method stub
 				return null;
 			}
+			
+			@Override
+			protected Date convertToDate(double rawValue) {
+				// TODO Auto-generated method stub
+				return null;
+			}
 
 		};
 		
 		assertEquals("TestFormatter", testFormatter1.getFormatterId());
+		
+		DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.ENGLISH);
+		df.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+		assertEquals("123.0", Formatter.Number.formatTextValue(123, Locale.ENGLISH, 1));
+		assertNull(Formatter.Number.convertToDate(123));
+		
+		assertEquals("02:03", Formatter.Time.formatTextValue(123, Locale.ENGLISH, 1));
+		assertEquals("Jan 1, 2001 2:03:00 AM", df.format(Formatter.Time.convertToDate(123)));
+		
+		assertEquals("Thu,02:04", Formatter.WeekTime.formatTextValue(4444, Locale.ENGLISH, 1));
+		assertEquals("Jan 4, 2001 2:04:00 AM", df.format(Formatter.WeekTime.convertToDate(4444)));
+
+		assertEquals("2015-01-01 12:01:00", Formatter.DateTime.formatTextValue(441806460, Locale.ENGLISH, 1));
+		assertEquals("Jan 1, 2015 12:01:00 PM", df.format(Formatter.DateTime.convertToDate(441806460)));
 	}
 	
 	@Test
