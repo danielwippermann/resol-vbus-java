@@ -30,6 +30,7 @@ import java.util.Locale;
 import org.junit.Test;
 
 import de.resol.vbus.Specification.*;
+import de.resol.vbus.SpecificationFile.EnumVariant;
 import de.resol.vbus.SpecificationFile.Language;
 import de.resol.vbus.SpecificationFile.Type;
 
@@ -459,6 +460,39 @@ public class SpecificationTest {
 		assertEquals("Night oper.", testPfv1.formatText(null, null, Language.En));
 		assertEquals("Nachtbetr.", testPfv1.formatText(null, null, Language.De));
 		assertEquals("Night oper.", testPfv1.formatText(null, null, Language.Fr));
+	}
+
+	@Test
+	public void testIsBooleanLikeEnum() throws Exception {
+		byte[] refBuffer1 = new byte[100];
+		
+		Header[] refHeaders1 = new Header[] {
+			new Packet(0, 0, 0x0010, 0x7E11, 0x0100, 25, refBuffer1),
+		};
+
+		PacketFieldValue[] testPfvs1 = spec.getPacketFieldValuesForHeaders(refHeaders1);
+		
+//		int index = 0;
+//		for (PacketFieldValue testPfv : testPfvs1) {
+//			System.out.println(index + ": " + testPfv.getPacketFieldSpec().getFieldId());
+//			index++;
+//		}
+		
+		PacketFieldValue testPfv1 = testPfvs1 [51];
+		assertEquals("00_0010_7E11_10_0100_096_4_0", testPfv1.getPacketFieldId());
+		assertEquals(false, testPfv1.isBooleanLikeEnum());
+		
+		PacketFieldValue testPfv2 = testPfvs1 [52];
+		assertEquals("00_0010_7E11_10_0100_096_1_1", testPfv2.getPacketFieldId());
+		assertEquals(true, testPfv2.isBooleanLikeEnum());
+		
+		EnumVariant testEv1 = testPfv2.getEnumVariant();
+		assertEquals("Okay", testEv1.getText());
+
+		refBuffer1 [96] = 1;
+
+		EnumVariant testEv2 = testPfv2.getEnumVariant();
+		assertEquals("Error", testEv2.getText());
 	}
 
 }

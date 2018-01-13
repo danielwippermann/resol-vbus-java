@@ -470,6 +470,15 @@ public class Specification {
 			return formatText(null, null, Language.En);
 		}
 		
+		public boolean isBooleanLikeEnum() {
+			PacketFieldSpec pfs = this.getPacketFieldSpec();
+			PacketTemplateFieldPart[] parts = pfs.getParts();
+			Enum enum_ = pfs.getEnum(); 
+			boolean isBitField = ((parts.length == 1) && (Integer.bitCount(parts [0].getMask()) == 1));
+			boolean isTwoVariantEnum = (enum_ != null) && (enum_.getEnumVariants().length == 2);
+			return (isBitField && isTwoVariantEnum);			
+		}
+		
 	}
 	
 	private SpecificationFile specificationFile;
