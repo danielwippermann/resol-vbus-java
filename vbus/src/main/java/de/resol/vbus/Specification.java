@@ -102,7 +102,7 @@ public class Specification {
 		
 		protected abstract String formatTextValue(double rawValue, Locale locale, int precision);
 		
-		protected abstract Date convertToDate(double rawValue);
+		protected abstract Date convertToDate(long rawValue);
 		
 		private static final String TIME_FORMAT_STRING = "HH:mm"; 
 		private static final String WEEKTIME_FORMAT_STRING = "EEE,HH:mm"; 
@@ -131,7 +131,7 @@ public class Specification {
 			}
 			
 			@Override
-			protected Date convertToDate(double rawValue) {
+			protected Date convertToDate(long rawValue) {
 				return null;
 			}
 
@@ -147,8 +147,8 @@ public class Specification {
 			}
 
 			@Override
-			protected Date convertToDate(double rawValue) {
-				return new Date(Math.round(rawValue + 16305120) * 60000);
+			protected Date convertToDate(long rawValue) {
+				return new Date((rawValue + 16305120) * 60000);
 			}
 
 		};
@@ -163,8 +163,8 @@ public class Specification {
 			}
 
 			@Override
-			protected Date convertToDate(double rawValue) {
-				return new Date(Math.round(rawValue + 16305120) * 60000);
+			protected Date convertToDate(long rawValue) {
+				return new Date((rawValue + 16305120) * 60000);
 			}
 
 		};
@@ -179,8 +179,8 @@ public class Specification {
 			}
 			
 			@Override
-			protected Date convertToDate(double rawValue) {
-				return new Date(Math.round(rawValue + 978307200) * 1000);
+			protected Date convertToDate(long rawValue) {
+				return new Date((rawValue + 978307200) * 1000);
 			}
 
 		};
@@ -470,7 +470,7 @@ public class Specification {
 		 * @return A `Date` instance representing the (possibly partial) date or `null` if the field is not a date/time-like value.
 		 */
 		public Date getRawValueDate() {
-			Double rawValue = getRawValueDouble();
+			Long rawValue = getRawValueLong();
 			Date date;
 			if (rawValue != null) {
 				Formatter formatter = Formatter.getFormatterForType(packetFieldSpec.getType());

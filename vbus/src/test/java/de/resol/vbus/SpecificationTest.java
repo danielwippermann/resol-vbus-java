@@ -79,7 +79,7 @@ public class SpecificationTest {
 			}
 			
 			@Override
-			protected Date convertToDate(double rawValue) {
+			protected Date convertToDate(long rawValue) {
 				// TODO Auto-generated method stub
 				return null;
 			}
