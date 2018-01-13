@@ -267,7 +267,7 @@ public class Specification {
 	
 		private SpecificationFile.PacketTemplateField packetTemplateField;
 		
-		protected PacketFieldSpec(SpecificationFile.PacketTemplate packetTemplate, SpecificationFile.PacketTemplateField packetTemplateField) {
+		protected PacketFieldSpec(SpecificationFile.PacketTemplateField packetTemplateField) {
 			this.packetTemplateField = packetTemplateField;
 		}
 
@@ -347,7 +347,7 @@ public class Specification {
 				SpecificationFile.PacketTemplateField[] packetTemplateFields = packetTemplate.getFields();
 				fieldSpecs = new PacketFieldSpec [packetTemplateFields.length];
 				for (int index = 0; index < packetTemplateFields.length; index++) {
-					fieldSpecs [index] = new PacketFieldSpec(packetTemplate, packetTemplateFields [index]);
+					fieldSpecs [index] = new PacketFieldSpec(packetTemplateFields [index]);
 				}
 			} else {
 				fieldSpecs = new PacketFieldSpec [0];

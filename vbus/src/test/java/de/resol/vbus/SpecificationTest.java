@@ -99,7 +99,7 @@ public class SpecificationTest {
 		SpecificationFile.PacketTemplate packetTemplate1 = specFile.findPacketTemplate(0x0010, 0x7E11, 0x0100);
 		SpecificationFile.PacketTemplateField packetTemplateField1 = packetTemplate1.getFields() [0];
 		
-		PacketFieldSpec testSpec1 = new PacketFieldSpec(packetTemplate1, packetTemplateField1);
+		PacketFieldSpec testSpec1 = new PacketFieldSpec(packetTemplateField1);
 		
 		assertEquals("000_2_0", testSpec1.getFieldId());
 		assertEquals("Temperatur Sensor 1", testSpec1.getName(Language.De));
