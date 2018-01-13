@@ -307,6 +307,10 @@ public class Specification {
 			return packetTemplateField.getParts();
 		}
 		
+		public Enum getEnum() {
+			return packetTemplateField.getEnum();
+		}
+		
 		public EnumVariant getEnumVariantForRawValue(long rawValue) {
 			Enum enum_ = packetTemplateField.getEnum();
 			EnumVariant enumVariant;
