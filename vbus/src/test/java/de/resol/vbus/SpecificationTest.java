@@ -499,6 +499,34 @@ public class SpecificationTest {
 	}
 	
 	@Test
+	public void testPacketFieldValueGetRawValueDate() throws Exception {
+		byte[] refBuffer1 = new byte[100];
+		
+		Header[] refHeaders1 = new Header[] {
+			new Packet(0, 0, 0x0010, 0x7E11, 0x0100, 25, refBuffer1),
+		};
+
+		PacketFieldValue[] testPfvs1 = spec.getPacketFieldValuesForHeaders(refHeaders1);
+
+		DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.ENGLISH);
+		df.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+		PacketFieldValue testPfv1 = getPacketFieldValueById(testPfvs1, "00_0010_7E11_10_0100_092_4_0");
+		assertEquals("Jan 1, 2001 12:00:00 AM", df.format(testPfv1.getRawValueDate()));
+
+		// 0x1A556E7C
+		refBuffer1 [92] = 0x7c;
+		refBuffer1 [93] = 0x6e;
+		refBuffer1 [94] = 0x55;
+		refBuffer1 [95] = 0x1a;
+		
+		assertEquals("Jan 1, 2015 12:01:00 PM", df.format(testPfv1.getRawValueDate()));
+		
+		PacketFieldValue testPfv2 = getPacketFieldValueById(testPfvs1, "00_0010_7E11_10_0100_096_4_0");
+		assertNull(testPfv2.getRawValueDate());
+	}
+
+	@Test
 	public void testIsBooleanLikeEnum() throws Exception {
 		byte[] refBuffer1 = new byte[100];
 		
@@ -507,8 +535,7 @@ public class SpecificationTest {
 		};
 
 		PacketFieldValue[] testPfvs1 = spec.getPacketFieldValuesForHeaders(refHeaders1);
-		
-		
+				
 		PacketFieldValue testPfv1 = getPacketFieldValueById(testPfvs1, "00_0010_7E11_10_0100_096_4_0");
 		assertEquals(false, testPfv1.isBooleanLikeEnum());
 		

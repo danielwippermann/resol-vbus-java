@@ -462,6 +462,25 @@ public class Specification {
 			return Specification.this.getRawValueDouble(packetFieldSpec, packet.frameData, 0, packet.frameCount * 4);
 		}
 		
+		/**
+		 * If the field repesents a date value, this method returns the corresponding Java `Date` instance.
+		 * If the field represents a time value, this method returns the corresponding Java `Date` instance around the date of 2001-01-01.
+		 * If the field does not represent a date/time-like value, this method returns `null`.
+		 * 
+		 * @return A `Date` instance representing the (possibly partial) date or `null` if the field is not a date/time-like value.
+		 */
+		public Date getRawValueDate() {
+			Double rawValue = getRawValueDouble();
+			Date date;
+			if (rawValue != null) {
+				Formatter formatter = Formatter.getFormatterForType(packetFieldSpec.getType());
+				date = formatter.convertToDate(rawValue);
+			} else {
+				date = null;
+			}
+			return date;
+		}
+		
 		public String formatTextValue(Unit unit, Locale locale) {
 			return Specification.this.formatTextValueFromRawValue(packetFieldSpec, getRawValueDouble(), unit, locale);
 		}
