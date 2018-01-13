@@ -1044,6 +1044,9 @@ public class SpecificationFile {
 		EnumVariant evHeatDump = forgeEnumVariant("HeatDump", "Heat dump", "Überwärmeabfuhr");
 		EnumVariant evBreak = forgeEnumVariant("Break", "Break", "Pause");
 		
+		EnumVariant evOkay = forgeEnumVariant("Okay", "Okay", "Okay");
+		EnumVariant evError = forgeEnumVariant("Error", "Error", "Error");
+		
 		// MxHeatingCircuitOperatingState
 		forgeEnum(0xa00705bd, new long[] {
 			0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
@@ -1070,10 +1073,23 @@ public class SpecificationFile {
 			evHeatDump,  // 19
 			evBreak,  // 20			
 		});
+		
+		// ErrorBooleanLike
+		forgeEnum(0x537e18fa, new long[] { 0, 1 }, new EnumVariant[] {
+			evOkay,
+			evError,
+		});
 	}
 
 	private void forgeEnumForPacketTemplateField(PacketTemplate pt, PacketTemplateField ptf) {
-		if ((pt.destinationAddress == 0x0010) && (pt.destinationMask == 0xFFFF) && (pt.sourceAddress == 0x7E20) && (pt.sourceMask == 0xFFF0) && (pt.command == 0x0100)) {
+		if ((pt.destinationAddress == 0x0010) && (pt.destinationMask == 0xFFFF) && (pt.sourceAddress == 0x7E11) && (pt.sourceMask == 0xFFFF) && (pt.command == 0x0100)) {
+			if (ptf.parts.size() == 1) {
+				PacketTemplateFieldPart part0 = ptf.parts.get(0);
+				if ((part0.offset >= 96) && (part0.offset <= 100)) {
+					ptf.enumId = 0x537e18fa;  // ErrorBooleanLike
+				}
+			}
+		} else if ((pt.destinationAddress == 0x0010) && (pt.destinationMask == 0xFFFF) && (pt.sourceAddress == 0x7E20) && (pt.sourceMask == 0xFFF0) && (pt.command == 0x0100)) {
 			if (getTextByIndex(ptf.idTextIndex).equals("002_1_0")) {
 				// 00_0010_7E20_10_0100_002_1_0: Operating state
 				ptf.enumId = 0xa00705bd;  // MxHeatingCircuitOperatingState
