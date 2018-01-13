@@ -486,6 +486,18 @@ public class SpecificationTest {
 		assertEquals("Night oper.", testPfv1.formatText(null, null, Language.Fr));
 	}
 
+	PacketFieldValue getPacketFieldValueById(PacketFieldValue[] pfvs, String id) {
+		for (PacketFieldValue pfv : pfvs) {
+			if (pfv.getPacketFieldId().equals(id)) {
+				return pfv;
+			}
+		}
+		for (PacketFieldValue pfv : pfvs) {
+			System.err.println(pfv.getPacketFieldId());
+		}
+		throw new Error("Unexpected packet field ID '" + id + "'");
+	}
+	
 	@Test
 	public void testIsBooleanLikeEnum() throws Exception {
 		byte[] refBuffer1 = new byte[100];
@@ -496,18 +508,11 @@ public class SpecificationTest {
 
 		PacketFieldValue[] testPfvs1 = spec.getPacketFieldValuesForHeaders(refHeaders1);
 		
-//		int index = 0;
-//		for (PacketFieldValue testPfv : testPfvs1) {
-//			System.out.println(index + ": " + testPfv.getPacketFieldSpec().getFieldId());
-//			index++;
-//		}
 		
-		PacketFieldValue testPfv1 = testPfvs1 [51];
-		assertEquals("00_0010_7E11_10_0100_096_4_0", testPfv1.getPacketFieldId());
+		PacketFieldValue testPfv1 = getPacketFieldValueById(testPfvs1, "00_0010_7E11_10_0100_096_4_0");
 		assertEquals(false, testPfv1.isBooleanLikeEnum());
 		
-		PacketFieldValue testPfv2 = testPfvs1 [52];
-		assertEquals("00_0010_7E11_10_0100_096_1_1", testPfv2.getPacketFieldId());
+		PacketFieldValue testPfv2 = getPacketFieldValueById(testPfvs1, "00_0010_7E11_10_0100_096_1_1");
 		assertEquals(true, testPfv2.isBooleanLikeEnum());
 		
 		EnumVariant testEv1 = testPfv2.getEnumVariant();
