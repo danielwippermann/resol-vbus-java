@@ -1085,7 +1085,7 @@ public class SpecificationFile {
 		if ((pt.destinationAddress == 0x0010) && (pt.destinationMask == 0xFFFF) && (pt.sourceAddress == 0x7E11) && (pt.sourceMask == 0xFFFF) && (pt.command == 0x0100)) {
 			if (ptf.parts.size() == 1) {
 				PacketTemplateFieldPart part0 = ptf.parts.get(0);
-				if ((part0.offset >= 96) && (part0.offset <= 100)) {
+				if ((part0.offset >= 96) && (part0.offset < 100)) {
 					ptf.enumId = 0x537e18fa;  // ErrorBooleanLike
 				}
 			}
