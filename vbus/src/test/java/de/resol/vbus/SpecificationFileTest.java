@@ -8437,6 +8437,10 @@ public class SpecificationFileTest {
 		t.assertNextEnumVariantEquals("Cooling", "Cooling", "Kühlung");
 		t.assertNextEnumVariantEquals("HeatDump", "Heat dump", "Überwärmeabfuhr");
 		t.assertNextEnumVariantEquals("Break", "Break", "Pause");
+		
+		t.assertNextEnumVariantEquals("Okay", "Okay", "Okay");
+		t.assertNextEnumVariantEquals("Error", "Error", "Fehler");
+		
 		t.assertEndOfEnumVariantTable();
 	}
 	
@@ -8461,6 +8465,7 @@ public class SpecificationFileTest {
 	public void testEnums() throws Exception {
 		EnumTester t = new EnumTester();
 		t.assertNextEnumEquals(0xa00705bd, 21);
+		t.assertNextEnumEquals(0x537e18fa, 2);
 		t.assertEndOfEnumTable();
 	}
 

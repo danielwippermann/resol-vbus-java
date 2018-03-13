@@ -1045,7 +1045,7 @@ public class SpecificationFile {
 		EnumVariant evBreak = forgeEnumVariant("Break", "Break", "Pause");
 		
 		EnumVariant evOkay = forgeEnumVariant("Okay", "Okay", "Okay");
-		EnumVariant evError = forgeEnumVariant("Error", "Error", "Error");
+		EnumVariant evError = forgeEnumVariant("Error", "Error", "Fehler");
 		
 		// MxHeatingCircuitOperatingState
 		forgeEnum(0xa00705bd, new long[] {
