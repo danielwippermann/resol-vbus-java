@@ -193,7 +193,10 @@ public class SpecificationTest {
 		assertEquals(0, testDeviceSpec1.getChannel());
 		assertEquals(0x7E11, testDeviceSpec1.getSelfAddress());
 		assertEquals(0x0010, testDeviceSpec1.getPeerAddress());
-		assertEquals("DeltaSol MX [Regler]", testDeviceSpec1.getName());
+		assertEquals("DeltaSol MX [Controller]", testDeviceSpec1.getName(Language.En));
+		assertEquals("DeltaSol MX [Regler]", testDeviceSpec1.getName(Language.De));
+		assertEquals("DeltaSol MX [Controller]", testDeviceSpec1.getName(Language.Fr));
+		assertEquals("DeltaSol MX [Controller]", testDeviceSpec1.getName());
 		
 		DeviceSpec testDeviceSpec2 = spec.getDeviceSpec(0, 0x7E11, 0x0010);
 		
