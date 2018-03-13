@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Locale;
 
 public class SpecificationFile {
 
@@ -109,6 +110,19 @@ public class SpecificationFile {
 		Fr,
 	}
 	
+	public static Language getLanguageForLocale(Locale l) {
+		String localeLanguage = l.getLanguage();
+		if ("en".equals(localeLanguage)) {
+			return Language.En;
+		} else if ("de".equals(localeLanguage)) {
+			return Language.De;
+		} else if ("fr".equals(localeLanguage)) {
+			return Language.Fr;
+		} else {
+			return Language.En;
+		}
+	}
+
 	public class LocalizedText {
 		int textIndexEn;
 		int textIndexDe;

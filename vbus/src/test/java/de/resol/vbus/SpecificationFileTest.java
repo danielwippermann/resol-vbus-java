@@ -26,6 +26,7 @@ package de.resol.vbus;
 import static org.junit.Assert.*;
 
 import java.io.InputStream;
+import java.util.Locale;
 
 import org.junit.Test;
 
@@ -47,6 +48,25 @@ public class SpecificationFileTest {
 	public SpecificationFileTest() {
 		InputStream is = SpecificationFileTest.class.getResourceAsStream("vbus_specification.vsf");
 		specFile = SpecificationFile.fromStream(is);
+	}
+
+	@Test
+	public void testGetLanguageForLocale() throws Exception {
+		assertEquals(Language.En, SpecificationFile.getLanguageForLocale(Locale.ENGLISH));
+		assertEquals(Language.En, SpecificationFile.getLanguageForLocale(Locale.UK));
+		assertEquals(Language.En, SpecificationFile.getLanguageForLocale(Locale.US));
+		assertEquals(Language.En, SpecificationFile.getLanguageForLocale(Locale.CANADA));
+		
+		assertEquals(Language.De, SpecificationFile.getLanguageForLocale(Locale.GERMAN));
+		assertEquals(Language.De, SpecificationFile.getLanguageForLocale(Locale.GERMANY));
+		
+		assertEquals(Language.Fr, SpecificationFile.getLanguageForLocale(Locale.FRENCH));
+		assertEquals(Language.Fr, SpecificationFile.getLanguageForLocale(Locale.FRANCE));
+
+		assertEquals(Language.En, SpecificationFile.getLanguageForLocale(Locale.ITALIAN));
+		assertEquals(Language.En, SpecificationFile.getLanguageForLocale(Locale.ITALY));
+
+		assertEquals(Language.En, SpecificationFile.getLanguageForLocale(Locale.SIMPLIFIED_CHINESE));
 	}
 
 	@Test
