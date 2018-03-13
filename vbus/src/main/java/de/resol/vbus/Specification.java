@@ -102,6 +102,8 @@ public class Specification {
 		
 		protected abstract String formatTextValue(double rawValue, Locale locale, int precision);
 		
+		protected abstract Date convertToDate(long rawValue);
+		
 		private static final String TIME_FORMAT_STRING = "HH:mm"; 
 		private static final String WEEKTIME_FORMAT_STRING = "EEE,HH:mm"; 
 		private static final String DATETIME_FORMAT_STRING = "yyyy-MM-dd HH:mm:ss";
@@ -128,6 +130,11 @@ public class Specification {
 				return textValue;
 			}
 			
+			@Override
+			protected Date convertToDate(long rawValue) {
+				return null;
+			}
+
 		};
 		
 		public static final Formatter Time = new Formatter("Time") {
@@ -137,6 +144,11 @@ public class Specification {
 				String textValue;
 				textValue = createUtcDateFormat(TIME_FORMAT_STRING, locale).format(new Date(Math.round(rawValue) * 60000));
 				return textValue;
+			}
+
+			@Override
+			protected Date convertToDate(long rawValue) {
+				return new Date((rawValue + 16305120) * 60000);
 			}
 
 		};
@@ -150,6 +162,11 @@ public class Specification {
 				return textValue;
 			}
 
+			@Override
+			protected Date convertToDate(long rawValue) {
+				return new Date((rawValue + 16305120) * 60000);
+			}
+
 		};
 
 		public static final Formatter DateTime = new Formatter("DateTime") {
@@ -159,6 +176,11 @@ public class Specification {
 				String textValue;
 				textValue = createUtcDateFormat(DATETIME_FORMAT_STRING, locale).format(new Date(Math.round(rawValue + 978307200) * 1000));
 				return textValue;
+			}
+			
+			@Override
+			protected Date convertToDate(long rawValue) {
+				return new Date((rawValue + 978307200) * 1000);
 			}
 
 		};
@@ -438,6 +460,25 @@ public class Specification {
 		
 		public Double getRawValueDouble() {
 			return Specification.this.getRawValueDouble(packetFieldSpec, packet.frameData, 0, packet.frameCount * 4);
+		}
+		
+		/**
+		 * If the field repesents a date value, this method returns the corresponding Java `Date` instance.
+		 * If the field represents a time value, this method returns the corresponding Java `Date` instance around the date of 2001-01-01.
+		 * If the field does not represent a date/time-like value, this method returns `null`.
+		 * 
+		 * @return A `Date` instance representing the (possibly partial) date or `null` if the field is not a date/time-like value.
+		 */
+		public Date getRawValueDate() {
+			Long rawValue = getRawValueLong();
+			Date date;
+			if (rawValue != null) {
+				Formatter formatter = Formatter.getFormatterForType(packetFieldSpec.getType());
+				date = formatter.convertToDate(rawValue);
+			} else {
+				date = null;
+			}
+			return date;
 		}
 		
 		public String formatTextValue(Unit unit, Locale locale) {
