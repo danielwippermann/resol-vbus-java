@@ -38,7 +38,36 @@ TBD
 
 ## Changelog
 
-TBD
+### 0.2.0 (WIP)
+
+- Add `SpecificationFile.getLanguageForLocale`.
+- Update VSF file to version 9 / 20180312.
+- fix off-by one in forged boolean-like-enums
+- Change `convertToDate` to use `long` instead of `double`.
+- Add `PacketFieldValue#getRawValueDate()` method.
+- Add `Formatter#convertToDate()`.
+- Add `PacketFieldValue#isBooleanLikeEnum()`.
+- Forge enum for boolean-like errors.
+- Add `PacketFieldSpec#getEnum()`.
+- Revert changes in constructor of `PacketFieldSpec`.
+- Fix bug that caused the locale to be ignored for dates.
+- Add `Enum` and `EnumVariant` support to `Specification`.
+- Add `Enum` and `EnumVariant` support to `SpecificationFile`.
+- Add access to all know units.
+- Fix reading whole specification file.
+- Fix VBusLAN adapter device info parsing bug.
+
+
+### 0.1.0 (2017-12-28)
+
+- Add support for VSF (VBus Specification File).
+- Adapt to recent change from `___.via.vbus.net` to `___.vbus.io`.
+- Some bug fixes.
+
+
+### 0.0.1
+
+Initial release
 
 
 
@@ -55,7 +84,7 @@ All other trademarks are the property of their respective owners.
 
 Copyright (C) 2008-2016, RESOL - Elektronische Regelungen GmbH.
 
-Copyright (C) 2016, Daniel Wippermann.
+Copyright (C) 2016-2018, Daniel Wippermann.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
