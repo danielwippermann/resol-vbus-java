@@ -23,20 +23,45 @@
  */
 package de.resol.vbus;
 
+/**
+ * The `LittleEndianBuffer` implements some convenience methods around
+ * a byte array to make reading and write values stored in little-endian
+ * format easier.
+ */
 public class LittleEndianBuffer {
 
 	private byte[] buffer;
 	private int start;
 	private int length;
 
+	/**
+	 * Create a new `LittleEndianBuffer` with its own backing byte array
+	 * of the given length.
+	 * 
+	 * @param length The length of the backing byte array.
+	 */
 	public LittleEndianBuffer(int length) {
 		this(new byte [length]);
 	}
 
+	/**
+	 * Create a new `LittleEndianBuffer` using the provided backing byte
+	 * array.
+	 * 
+	 * @param buffer The backing byte array to use.
+	 */
 	public LittleEndianBuffer(byte[] buffer) {
 		this(buffer, 0, buffer.length);
 	}
 
+	/**
+	 * Create a new `LittleEndianBuffer` using a portion of the provided
+	 * backing byte array.
+	 * 
+	 * @param buffer The backing byte array to use.
+	 * @param start The start offset of the view into the byte array.
+	 * @param length The length of the view into the byte array. 
+	 */
 	public LittleEndianBuffer(byte[] buffer, int start, int length) {
 		if ((start + length) > buffer.length) {
 			throw new Error("Buffer too small for provided offsets");
@@ -47,14 +72,29 @@ public class LittleEndianBuffer {
 		this.length = length;
 	}
 	
+	/**
+	 * Get the backing byte array.
+	 * 
+	 * @return The backing byte array.
+	 */
 	public byte[] getBuffer() {
 		return buffer;
 	}
 	
+	/**
+	 * Get the start offset of the view into the backing byte array.
+	 * 
+	 * @return The start offset of the view into the backing byte array.
+	 */
 	public int getStart() {
 		return start;
 	}
 	
+	/**
+	 * Get the length of the view into the backing byte array.
+	 * 
+	 * @return The length of the view into the backing byte array.
+	 */
 	public int getLength() {
 		return length;
 	}
@@ -77,6 +117,12 @@ public class LittleEndianBuffer {
 		}
 	}
 
+	/**
+	 * Read a signed 8-bit integer from the given offset.
+	 * 
+	 * @param index The offset to read the value from
+	 * @return The value read from the byte array.
+	 */
 	public int readI8(int index) {
 		checkIndexRange(index, 1);
 		
@@ -85,6 +131,12 @@ public class LittleEndianBuffer {
 		return value;
 	}
 	
+	/**
+	 * Write a signed 8-bit integer to the given offset.
+	 * 
+	 * @param index The offset to write the value to
+	 * @param value The value to write to the byte array.
+	 */
 	public void writeI8(int index, int value) {
 		checkIndexRange(index, 1);
 		checkValueRange(value, -128, 127);
@@ -92,6 +144,12 @@ public class LittleEndianBuffer {
 		buffer [start + index] = (byte) value;
 	}
 	
+	/**
+	 * Read an unsigned 8-bit integer from the given offset.
+	 * 
+	 * @param index The offset to read the value from
+	 * @return The value read from the byte array.
+	 */
 	public int readU8(int index) {
 		checkIndexRange(index, 1);
 		
@@ -100,6 +158,12 @@ public class LittleEndianBuffer {
 		return value;
 	}
 
+	/**
+	 * Write an unsigned 8-bit integer to the given offset.
+	 * 
+	 * @param index The offset to write the value to
+	 * @param value The value to write to the byte array.
+	 */
 	public void writeU8(int index, int value) {
 		checkIndexRange(index, 1);
 		checkValueRange(value, 0, 255);
@@ -107,6 +171,12 @@ public class LittleEndianBuffer {
 		buffer [start + index] = (byte) value;
 	}
 
+	/**
+	 * Read a signed 16-bit integer from the given offset.
+	 * 
+	 * @param index The offset to read the value from
+	 * @return The value read from the byte array.
+	 */
 	public int readI16(int index) {
 		checkIndexRange(index, 2);
 		
@@ -116,6 +186,12 @@ public class LittleEndianBuffer {
 		return value;
 	}
 	
+	/**
+	 * Write a signed 16-bit integer to the given offset.
+	 * 
+	 * @param index The offset to write the value to
+	 * @param value The value to write to the byte array.
+	 */
 	public void writeI16(int index, int value) {
 		checkIndexRange(index, 2);
 		checkValueRange(value, -32768, 32767);
@@ -124,6 +200,12 @@ public class LittleEndianBuffer {
 		buffer [start + index + 1] = (byte) (value >> 8);
 	}
 
+	/**
+	 * Read an unsigned 16-bit integer from the given offset.
+	 * 
+	 * @param index The offset to read the value from
+	 * @return The value read from the byte array.
+	 */
 	public int readU16(int index) {
 		checkIndexRange(index, 2);
 		
@@ -133,6 +215,12 @@ public class LittleEndianBuffer {
 		return value;
 	}
 	
+	/**
+	 * Write an unsigned 16-bit integer to the given offset.
+	 * 
+	 * @param index The offset to write the value to
+	 * @param value The value to write to the byte array.
+	 */
 	public void writeU16(int index, int value) {
 		checkIndexRange(index, 2);
 		checkValueRange(value, 0, 65535);
@@ -141,6 +229,12 @@ public class LittleEndianBuffer {
 		buffer [start + index + 1] = (byte) (value >> 8);
 	}
 	
+	/**
+	 * Read a signed 24-bit integer from the given offset.
+	 * 
+	 * @param index The offset to read the value from
+	 * @return The value read from the byte array.
+	 */
 	public int readI24(int index) {
 		checkIndexRange(index, 3);
 		
@@ -151,6 +245,12 @@ public class LittleEndianBuffer {
 		return value;
 	}
 	
+	/**
+	 * Write a signed 24-bit integer to the given offset.
+	 * 
+	 * @param index The offset to write the value to
+	 * @param value The value to write to the byte array.
+	 */
 	public void writeI24(int index, int value) {
 		checkIndexRange(index, 3);
 		checkValueRange(value, -8388608, 8388607);
@@ -160,6 +260,12 @@ public class LittleEndianBuffer {
 		buffer [start + index + 2] = (byte) (value >> 16);
 	}
 
+	/**
+	 * Read an unsigned 24-bit integer from the given offset.
+	 * 
+	 * @param index The offset to read the value from
+	 * @return The value read from the byte array.
+	 */
 	public int readU24(int index) {
 		checkIndexRange(index, 3);
 		
@@ -170,6 +276,12 @@ public class LittleEndianBuffer {
 		return value;
 	}
 	
+	/**
+	 * Write an unsigned 24-bit integer to the given offset.
+	 * 
+	 * @param index The offset to write the value to
+	 * @param value The value to write to the byte array.
+	 */
 	public void writeU24(int index, int value) {
 		checkIndexRange(index, 3);
 		checkValueRange(value, 0, 16777215);
@@ -179,6 +291,12 @@ public class LittleEndianBuffer {
 		buffer [start + index + 2] = (byte) (value >> 16);
 	}
 	
+	/**
+	 * Read a signed 32-bit integer from the given offset.
+	 * 
+	 * @param index The offset to read the value from
+	 * @return The value read from the byte array.
+	 */
 	public int readI32(int index) {
 		checkIndexRange(index, 4);
 		
@@ -190,6 +308,12 @@ public class LittleEndianBuffer {
 		return value;
 	}
 	
+	/**
+	 * Write a signed 32-bit integer to the given offset.
+	 * 
+	 * @param index The offset to write the value to
+	 * @param value The value to write to the byte array.
+	 */
 	public void writeI32(int index, int value) {
 		checkIndexRange(index, 4);
 		
