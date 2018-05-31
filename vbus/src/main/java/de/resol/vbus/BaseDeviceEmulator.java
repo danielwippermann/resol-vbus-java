@@ -145,10 +145,9 @@ public abstract class BaseDeviceEmulator implements ConnectionListener {
 	 * Update internal time-related state.
 	 * 
 	 * @param deltaMs The amount of milliseconds passed since the last call to `update`.
+	 * @return The amount of milliseconds until next preferred call to `update`.
 	 */
-	public void update(int deltaMs) {
-		// nop, can be implemented by sub-class if necessary
-	}
+	public abstract int update(int deltaMs);
 
 	/**
 	 * Send the provided header, ignoring possible I/O errors.

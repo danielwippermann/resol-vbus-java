@@ -31,8 +31,12 @@ public class TestableDeviceEmulator extends BaseDeviceEmulator {
 	
 	@Override
 	public void firePropertyChange(String propName, Object oldValue, Object newValue) {
-		// TODO Auto-generated method stub
 		super.firePropertyChange(propName, oldValue, newValue);
+	}
+	
+	@Override
+	public int update(int deltaMs) {
+		return 1000;
 	}
 	
 }
