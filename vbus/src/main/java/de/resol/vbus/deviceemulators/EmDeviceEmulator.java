@@ -29,16 +29,16 @@ import de.resol.vbus.LittleEndianBuffer;
 import de.resol.vbus.Packet;
 
 /**
- * The `Em1DeviceEmulator` listens for packets directed from a controller
- * to one of the "RESOL EM1" extension module addressed, storing the
+ * The `EmDeviceEmulator` listens for packets directed from a controller
+ * to one of the "RESOL extension module EM" addressed, storing the
  * data provided by the controller and replying with a corresponding
- * packet to make the controller believe a real EM1 is connected to the
+ * packet to make the controller believe a real EM is connected to the
  * bus, allowing to emulate "virtual" sensors and relais.
  * 
- * If the `Em1DeviceEmulator` does not receive any packet update for 30 s,
+ * If the `EmDeviceEmulator` does not receive any packet update for 30 s,
  * it resets itself, causing the virtual relay values to go back to 0.
  */
-public class Em1DeviceEmulator extends BaseDeviceEmulator {
+public class EmDeviceEmulator extends BaseDeviceEmulator {
 
 	private static final int BASE_ADDRESS = 0x6650;
 
@@ -144,12 +144,12 @@ public class Em1DeviceEmulator extends BaseDeviceEmulator {
 	private int timeout;
 	
 	/**
-	 * Create a new `Em1DeviceEmulator` using the provided connection and subaddress.
+	 * Create a new `EmDeviceEmulator` using the provided connection and subaddress.
 	 * 
 	 * @param connection The connection to use.
 	 * @param subAddress The sub address (1-15) to use.
 	 */
-	public Em1DeviceEmulator(Connection connection, int subAddress) {
+	public EmDeviceEmulator(Connection connection, int subAddress) {
 		super(connection);
 		
 		if ((subAddress < 1) || (subAddress > 15)) {

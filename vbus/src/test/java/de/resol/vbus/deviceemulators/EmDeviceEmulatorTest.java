@@ -34,29 +34,29 @@ import de.resol.vbus.LittleEndianBuffer;
 import de.resol.vbus.Packet;
 import de.resol.vbus.TestableConnection;
 import de.resol.vbus.TestablePropertyChangeListener;
-import de.resol.vbus.deviceemulators.Em1DeviceEmulator.Relay;
+import de.resol.vbus.deviceemulators.EmDeviceEmulator.Relay;
 
-public class Em1DeviceEmulatorTest {
+public class EmDeviceEmulatorTest {
 
 	@Test
 	public void testConstructor() {
 		TestableConnection conn = new TestableConnection(0x0020);
 		
-		Em1DeviceEmulator device = new Em1DeviceEmulator(conn, 1);
+		EmDeviceEmulator device = new EmDeviceEmulator(conn, 1);
 		
 		assertEquals(conn, device.getConnection());
 		assertEquals(1, device.getSubAddress());
 		
 		int checkpoints = 0;
 		try {
-			new Em1DeviceEmulator(conn, 0);
+			new EmDeviceEmulator(conn, 0);
 		} catch (Throwable t) {
 			assertEquals("Sub address must be between 1 and 15", t.getMessage());
 			checkpoints += 1;
 		}
 		
 		try {
-			new Em1DeviceEmulator(conn, 16);
+			new EmDeviceEmulator(conn, 16);
 		} catch (Throwable t) {
 			assertEquals("Sub address must be between 1 and 15", t.getMessage());
 			checkpoints += 1;
@@ -69,7 +69,7 @@ public class Em1DeviceEmulatorTest {
 	public void testName() throws Exception {
 		TestableConnection conn = new TestableConnection(0x0020);
 		
-		Em1DeviceEmulator device = new Em1DeviceEmulator(conn, 1);
+		EmDeviceEmulator device = new EmDeviceEmulator(conn, 1);
 
 		int checkpoints = 0;
 		
@@ -94,7 +94,7 @@ public class Em1DeviceEmulatorTest {
 	public void testGetResistorValueByNr() throws Exception {
 		TestableConnection conn = new TestableConnection(0x0020);
 		
-		Em1DeviceEmulator device = new Em1DeviceEmulator(conn, 1);
+		EmDeviceEmulator device = new EmDeviceEmulator(conn, 1);
 
 		assertEquals(1000000000, device.getResistorValueByNr(1));
 	}
@@ -103,7 +103,7 @@ public class Em1DeviceEmulatorTest {
 	public void testSetResistorValueByNr() throws Exception {
 		TestableConnection conn = new TestableConnection(0x0020);
 		
-		Em1DeviceEmulator device = new Em1DeviceEmulator(conn, 1);
+		EmDeviceEmulator device = new EmDeviceEmulator(conn, 1);
 
 		device.setResistorValueByNr(1, 1000);
 
@@ -114,7 +114,7 @@ public class Em1DeviceEmulatorTest {
 	public void testSetResistorValueByNrAndPt1000Temperature() throws Exception {
 		TestableConnection conn = new TestableConnection(0x0020);
 		
-		Em1DeviceEmulator device = new Em1DeviceEmulator(conn, 1);
+		EmDeviceEmulator device = new EmDeviceEmulator(conn, 1);
 
 		device.setResistorValueByNrAndPt1000Temperatur(1, 0.0f);
 		device.setResistorValueByNrAndPt1000Temperatur(2, 100.0f);
@@ -131,7 +131,7 @@ public class Em1DeviceEmulatorTest {
 	public void testCheckRelayNr() throws Exception {
 		TestableConnection conn = new TestableConnection(0x0020);
 		
-		Em1DeviceEmulator device = new Em1DeviceEmulator(conn, 1);
+		EmDeviceEmulator device = new EmDeviceEmulator(conn, 1);
 
 		int checkpoints = 0;
 		
@@ -156,7 +156,7 @@ public class Em1DeviceEmulatorTest {
 	public void testGetRelayByNr() throws Exception {
 		TestableConnection conn = new TestableConnection(0x0020);
 		
-		Em1DeviceEmulator device = new Em1DeviceEmulator(conn, 1);
+		EmDeviceEmulator device = new EmDeviceEmulator(conn, 1);
 
 		Relay relay = device.getRelayByNr(1);
 		
@@ -167,7 +167,7 @@ public class Em1DeviceEmulatorTest {
 	public void testGetRelayValueByNr() throws Exception {
 		TestableConnection conn = new TestableConnection(0x0020);
 		
-		Em1DeviceEmulator device = new Em1DeviceEmulator(conn, 1);
+		EmDeviceEmulator device = new EmDeviceEmulator(conn, 1);
 
 		assertEquals(0, device.getRelayValueByNr(1));
 	}
@@ -176,7 +176,7 @@ public class Em1DeviceEmulatorTest {
 	public void testPacketReceived() throws Exception {
 		TestableConnection conn = new TestableConnection(0x0020);
 		
-		Em1DeviceEmulator device = new Em1DeviceEmulator(conn, 1);
+		EmDeviceEmulator device = new EmDeviceEmulator(conn, 1);
 
 		device.setResistorValueByNr(1, 1000000);
 		device.setResistorValueByNr(2, 1200000);
@@ -235,7 +235,7 @@ public class Em1DeviceEmulatorTest {
 	public void testUpdate() throws Exception {
 		TestableConnection conn = new TestableConnection(0x0020);
 		
-		Em1DeviceEmulator device = new Em1DeviceEmulator(conn, 1);
+		EmDeviceEmulator device = new EmDeviceEmulator(conn, 1);
 
 		TestablePropertyChangeListener pcl = new TestablePropertyChangeListener();
 		device.addPropertyChangeListener(pcl);
