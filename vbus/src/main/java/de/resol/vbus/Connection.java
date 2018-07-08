@@ -155,7 +155,9 @@ public abstract class Connection {
 	}
 
 	protected void emitHeaderReceived(Header header) {
-		for (ConnectionListener listener : this.listeners) {
+		ConnectionListener[] listenersCopy = listeners.toArray(new ConnectionListener[listeners.size()]);
+
+		for (ConnectionListener listener : listenersCopy) {
 			if (header instanceof Packet) {
 				listener.packetReceived(this, (Packet) header);
 			} else if (header instanceof Datagram) {
