@@ -38,7 +38,24 @@ TBD
 
 ## Changelog
 
-### 0.2.0 (WIP)
+### 0.3.0 (2019-01-16)
+
+- Replace Apache Commons `Hex` class with minimal stub.
+- Fix bugs in `getValueIdByIdHash` and `getValueIdHashById`.
+- Copy listeners to prevent `ConcurrentModificationException`.
+- Add an example that uses two `EmDeviceEmulator` instances.
+- Rename `Em1DeviceEmulator` to `EmDeviceEmulator`.
+- Add `Em1DeviceEmulator` and tests.
+- Change `BaseDeviceEmulator#update` to return preferred sleep time.
+- Add `BaseDeviceEmulator` class and tests.
+- Add documentation to `LittleEndianBuffer`.
+- Add `TestablePropertyChangeListener`.
+- Add `TestableConnection` class.
+- Add `LittleEndianBuffer` and tests.
+- Add `aggregator` example.
+
+
+### 0.2.0 (2018-03-24)
 
 - Add `SpecificationFile.getLanguageForLocale`.
 - Update VSF file to version 9 / 20180312.
