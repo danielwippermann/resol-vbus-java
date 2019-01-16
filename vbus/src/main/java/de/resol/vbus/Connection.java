@@ -405,7 +405,7 @@ public abstract class Connection {
 						// nop
 					} else if (dgram.getSourceAddress() != address) {
 						// nop
-					} else if (dgram.getCommand() != 0x0100) {
+					} else if ((dgram.getCommand() != 0x0100) && (dgram.getCommand() != 0x1001)) {
 						// nop
 					} else if (dgram.getValueId() != valueId) {
 						// nop
@@ -444,7 +444,7 @@ public abstract class Connection {
 						// nop
 					} else if (dgram.getSourceAddress() != address) {
 						// nop
-					} else if (dgram.getCommand() != 0x0100) {
+					} else if ((dgram.getCommand() != 0x0100) && (dgram.getCommand() != 0x1101)) {
 						// nop
 					} else if (dgram.getValue() != valueIdHash) {
 						// nop
