@@ -28,7 +28,6 @@ import static org.junit.Assert.*;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
-import org.apache.commons.codec.binary.Hex;
 import org.junit.Test;
 
 public class LiveInputStreamTest {

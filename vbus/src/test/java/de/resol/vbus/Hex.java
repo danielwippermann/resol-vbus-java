@@ -1,6 +1,6 @@
 /**
  * Copyright (C) 2008-2016, RESOL - Elektronische Regelungen GmbH.
- * Copyright (C) 2016, Daniel Wippermann.
+ * Copyright (C) 2019, Daniel Wippermann.
  * 
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -23,40 +23,23 @@
  */
 package de.resol.vbus;
 
-import static org.junit.Assert.*;
+public class Hex {
 
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-
-import org.junit.Test;
-
-public class LiveOutputStreamTest {
-
-	@Test
-	public void testConstructor() throws Exception {
-		PipedOutputStream refOs1 = new PipedOutputStream();
-		
-		LiveOutputStream testOs1 = new LiveOutputStream(refOs1);
-		
-		assertEquals(refOs1, testOs1.os);
+	public static String encodeHexString(byte[] bytes) {
+		StringBuilder sb = new StringBuilder(bytes.length * 2);
+		for (int i = 0; i < bytes.length; i++) {
+			sb.append(String.format("%02x", bytes [i] & 0xFF));
+		}
+		return sb.toString();
 	}
 
-	@Test
-	public void testWriteHeader() throws Exception {
-		Datagram refDgram1 = new Datagram(0, 0, 0x2336, 0x3335, 0x4334, 0x5333, 0x63328330);
-		
-		PipedInputStream refIs1 = new PipedInputStream(2048);
-		PipedOutputStream refOs1 = new PipedOutputStream(refIs1);
-		
-		LiveOutputStream testOs1 = new LiveOutputStream(refOs1);
-		
-		testOs1.writeHeader(refDgram1);
-		
-		byte[] testBuffer1 = new byte [32];
-		int testLength1 = refIs1.read(testBuffer1);
-		
-		assertEquals(16, testLength1);
-		assertEquals("aa362335332034433353300332630851", Hex.encodeHexString(testBuffer1).substring(0, 32));
+	public static byte[] decodeHex(char[] chars) {
+		byte[] result = new byte [chars.length >> 1];
+		for (int i = 0; i < result.length; i++) {
+			String str = "" + chars [i * 2] + chars [i * 2 + 1];
+			result [i] = (byte) Integer.parseInt(str, 16);
+		}
+		return result;
 	}
-	
+
 }

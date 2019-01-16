@@ -25,7 +25,6 @@ package de.resol.vbus;
 
 import static org.junit.Assert.*;
 
-import org.apache.commons.codec.binary.Hex;
 import org.junit.Test;
 
 
