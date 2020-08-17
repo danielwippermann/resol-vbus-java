@@ -95,13 +95,13 @@ public class SpecificationTest {
 		assertNull(Formatter.Number.convertToDate(123));
 		
 		assertEquals("02:03", Formatter.Time.formatTextValue(123, Locale.ENGLISH, 1));
-		assertEquals("Jan 1, 2001 2:03:00 AM", df.format(Formatter.Time.convertToDate(123)));
+		assertEquals("Jan 1, 2001, 2:03:00 AM", df.format(Formatter.Time.convertToDate(123)));
 		
 		assertEquals("Thu,02:04", Formatter.WeekTime.formatTextValue(4444, Locale.ENGLISH, 1));
-		assertEquals("Jan 4, 2001 2:04:00 AM", df.format(Formatter.WeekTime.convertToDate(4444)));
+		assertEquals("Jan 4, 2001, 2:04:00 AM", df.format(Formatter.WeekTime.convertToDate(4444)));
 
 		assertEquals("2015-01-01 12:01:00", Formatter.DateTime.formatTextValue(441806460, Locale.ENGLISH, 1));
-		assertEquals("Jan 1, 2015 12:01:00 PM", df.format(Formatter.DateTime.convertToDate(441806460)));
+		assertEquals("Jan 1, 2015, 12:01:00 PM", df.format(Formatter.DateTime.convertToDate(441806460)));
 	}
 	
 	@Test
@@ -515,7 +515,7 @@ public class SpecificationTest {
 		df.setTimeZone(TimeZone.getTimeZone("UTC"));
 
 		PacketFieldValue testPfv1 = getPacketFieldValueById(testPfvs1, "00_0010_7E11_10_0100_092_4_0");
-		assertEquals("Jan 1, 2001 12:00:00 AM", df.format(testPfv1.getRawValueDate()));
+		assertEquals("Jan 1, 2001, 12:00:00 AM", df.format(testPfv1.getRawValueDate()));
 
 		// 0x1A556E7C
 		refBuffer1 [92] = 0x7c;
@@ -523,7 +523,7 @@ public class SpecificationTest {
 		refBuffer1 [94] = 0x55;
 		refBuffer1 [95] = 0x1a;
 		
-		assertEquals("Jan 1, 2015 12:01:00 PM", df.format(testPfv1.getRawValueDate()));
+		assertEquals("Jan 1, 2015, 12:01:00 PM", df.format(testPfv1.getRawValueDate()));
 		
 		PacketFieldValue testPfv2 = getPacketFieldValueById(testPfvs1, "00_0010_7E11_10_0100_096_4_0");
 		assertNull(testPfv2.getRawValueDate());

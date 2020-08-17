@@ -206,6 +206,9 @@ public class TcpConnectionTest {
 				new Packet(0, 0, 0, 0, 0, 0, null),
 				new Datagram(0, 0, 0, 0, 0, 0, 0),
 				new Telegram(0, 0, 0, 0, 0, null),
+				null,
+				null,
+				null,
 			};
 			
 			while (socket.isConnected()) {
@@ -215,7 +218,11 @@ public class TcpConnectionTest {
 					// nop
 				}
 				
-				os.writeHeader(headers [headerIndex++]);
+				if (headers [headerIndex] != null) {
+					os.writeHeader(headers [headerIndex]);
+				}
+
+				headerIndex += 1;
 				if (headerIndex >= headers.length) {
 					headerIndex = 0;
 				}

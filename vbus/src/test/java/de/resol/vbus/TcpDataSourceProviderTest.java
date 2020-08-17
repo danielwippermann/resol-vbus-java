@@ -25,6 +25,7 @@ package de.resol.vbus;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -91,7 +92,7 @@ public class TcpDataSourceProviderTest {
 				exceptionCount++;
 			}
 			
-			assertEquals(0, exceptionCount);
+			assumeTrue(exceptionCount == 0);
 			assertNotEquals(null, address);
 			assertNotEquals(null, dataSource);
 			assertEquals(TcpDataSourceProvider.getSharedProvider(), dataSource.getProvider());
