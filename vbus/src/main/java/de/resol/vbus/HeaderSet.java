@@ -33,7 +33,7 @@ import java.util.Iterator;
 import java.util.ListIterator;
 
 /**
- * A `HeaderSet` works like a `java.util.Set<Header>` with some extra methods.
+ * A `HeaderSet` works like a `java.util.Set&lt;Header&gt;` with some extra methods.
  * If a `Header` object is added to a `HeaderSet` an older version of the `Header`
  * is removed before the new one is added. 
  */

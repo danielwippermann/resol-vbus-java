@@ -533,7 +533,7 @@ public class Specification {
 	/**
 	 * Creates a `Specification` instances, initializing its members to the given values.
 	 * 
-	 * @param specificationFile The `SpecificationFile` instance to use.
+	 * @param specFile The `SpecificationFile` instance to use.
 	 */
 	public Specification(SpecificationFile specFile) {
 		this.specificationFile = specFile;

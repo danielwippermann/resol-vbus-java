@@ -163,10 +163,10 @@ public abstract class Header implements Comparable<Header>{
      * information.
      *
      * @param that Another Header instance to compare to.
-     * @returns Returns a number
+     * @return Returns a number
      *
-     *   - less than 0 if `this < that`
-     *   - greater than 0 if `this > that`
+     *   - less than 0 if `this &lt; that`
+     *   - greater than 0 if `this &gt; that`
      *   - equal to to if `this == that`
 	 */
 	public int compareTo(Header that) {
@@ -261,7 +261,7 @@ public abstract class Header implements Comparable<Header>{
 	 *  
 	 * @param srcBuffer Source byte array containing data incl. septett byte.
 	 * @param srcStart Start index in the source byte array. 
-	 * @param length Length to copy (0 <= length <= 7).
+	 * @param length Length to copy (0 &lt;= length &lt;= 7).
 	 * @param dstBuffer Destination byte array to store data in.
 	 * @param dstStart Start index in the destination byte array.
 	 */
@@ -290,7 +290,7 @@ public abstract class Header implements Comparable<Header>{
 	 * 
 	 * @param srcBuffer Source byte array containing data including MSBs set.
 	 * @param srcStart Start index in the source byte array.
-	 * @param length Length to copy (0 <= length <= 7).
+	 * @param length Length to copy (0 &lt;= length &lt;= 7).
 	 * @param dstBuffer Destination byte array to store data and septett byte in.
 	 * @param dstStart Start index in the destination byte array.
 	 */
