@@ -47,7 +47,7 @@ public class LiveOutputStream {
 	 * sends it to the wrapped `OutputStream`.
 	 * 
 	 * @param header `Header` instance to send.
-	 * @throws IOException
+	 * @throws IOException If an I/O error occurs.
 	 */
 	public void writeHeader(Header header) throws IOException {
 		os.write(header.toLiveBuffer(null, 0, 0));

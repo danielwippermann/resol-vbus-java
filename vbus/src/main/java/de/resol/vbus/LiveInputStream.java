@@ -62,7 +62,7 @@ public class LiveInputStream {
 	 * reading additional data from the wrapped `InputStream`.
 	 *  
 	 * @return A `Header` instance or `null` on eof of stream.
-	 * @throws IOException
+	 * @throws IOException If an I/O error occurs.
 	 */
 	public Header readHeader() throws IOException {
 		Header header = null;

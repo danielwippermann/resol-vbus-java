@@ -99,7 +99,7 @@ public class EmDeviceEmulator extends BaseDeviceEmulator {
 		/**
 		 * Return the current value of the relay based on the "value X"
 		 * and "time X" settings.
-		 * @return
+		 * @return The value of the relay.
 		 */
 		public int getValue() {
 			return value;

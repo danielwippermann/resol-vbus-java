@@ -124,7 +124,7 @@ public abstract class Connection {
 	 * 
 	 * Must be implemented by sub-class.
 	 * 
-	 * @throws IOException
+	 * @throws IOException If an I/O error occurs.
 	 */
 	public abstract void connect() throws IOException;
 	
@@ -133,7 +133,7 @@ public abstract class Connection {
 	 * 
 	 * Must be implemented by sub-class.
 	 * 
-	 * @throws IOException
+	 * @throws IOException If an I/O error occurs.
 	 */
 	public abstract void disconnect() throws IOException;
 	
@@ -143,7 +143,7 @@ public abstract class Connection {
 	 * Must be implemented by sub-class.
 	 * 
 	 * @param header `Header` instance to send.
-	 * @throws IOException
+	 * @throws IOException If an I/O error occurs.
 	 */
 	public abstract void send(Header header) throws IOException;
 	
@@ -187,7 +187,7 @@ public abstract class Connection {
 	 * @param filter Filter to cancel timeout early or `null` if cancellation
 	 * is not necessary.
 	 * @return The `Header` instance that the `filter` returned `true` for.
-	 * @throws IOException
+	 * @throws IOException If an I/O error occurs.
 	 */
 	public Header transceive(Header txHeader, int initialTimeout, int timeoutIncr, int tries, final HeaderFilter filter) throws IOException {
 		final Header[] rxHeader = new Header [1];
@@ -258,7 +258,7 @@ public abstract class Connection {
 	 * 
 	 * @param timeout Timeout in milliseconds to wait for datagram
 	 * @return `Datagram` containing the VBus bus offering command or `null` on timeout
-	 * @throws IOException
+	 * @throws IOException If an I/O error occurs.
 	 */
 	public Datagram waitForFreeBus(int timeout) throws IOException {
 		Header rxHeader = transceive(null, timeout, 0, 1, new HeaderFilter() {
@@ -286,7 +286,7 @@ public abstract class Connection {
 	 * @param timeoutIncr Timeout increment in milliseconds.
 	 * @param tries Number of tries.
 	 * @return First `Packet` instance received after the VBus was released or `null` on timeout.
-	 * @throws IOException
+	 * @throws IOException If an I/O error occurs.
 	 */
 	public Packet releaseBus(int address, int timeout, int timeoutIncr, int tries) throws IOException {
 		Datagram txDgram = new Datagram(0, 0, address, selfAddress, 0x0600, 0, 0);
@@ -311,7 +311,7 @@ public abstract class Connection {
 	 * @param timeoutIncr Timeout increment in milliseconds.
 	 * @param tries Number of tries.
 	 * @return `Datagram` instance containing the value or `null` on timeout.
-	 * @throws IOException
+	 * @throws IOException If an I/O error occurs.
 	 */
 	public Datagram getValueById(final int address, final int valueId, int timeout, int timeoutIncr, int tries) throws IOException {
 		Datagram txDgram = new Datagram(0, 0, address, selfAddress, 0x0300, valueId, 0);
@@ -352,7 +352,7 @@ public abstract class Connection {
 	 * @param timeoutIncr Timeout increment in milliseconds.
 	 * @param tries Number of tries.
 	 * @return `Datagram` instance containing the value or `null` on timeout.
-	 * @throws IOException
+	 * @throws IOException If an I/O error occurs.
 	 */
 	public Datagram setValueById(final int address, final int valueId, int value, boolean save, int timeout, int timeoutIncr, int tries) throws IOException {
 		Datagram txDgram = new Datagram(0, 0, address, selfAddress, save ? 0x0400 : 0x0200, valueId, value);
@@ -391,7 +391,7 @@ public abstract class Connection {
 	 * @param timeoutIncr Timeout increment in milliseconds.
 	 * @param tries Number of tries.
 	 * @return `Datagram` instance containing the Value ID hash in the `value` field or `null` on timeout
-	 * @throws IOException
+	 * @throws IOException If an I/O error occurs.
 	 */
 	public Datagram getValueIdHashById(final int address, final int valueId, int timeout, int timeoutIncr, int tries) throws IOException {
 		Datagram txDgram = new Datagram(0, 0, address, selfAddress, 0x1000, valueId, 0);
@@ -430,7 +430,7 @@ public abstract class Connection {
 	 * @param timeoutIncr Timeout increment in milliseconds.
 	 * @param tries Number of tries.
 	 * @return `Datagram` instance containing the Value ID or `null` on timeout
-	 * @throws IOException
+	 * @throws IOException If an I/O error occurs.
 	 */
 	public Datagram getValueIdByIdHash(final int address, final int valueIdHash, int timeout, int timeoutIncr, int tries) throws IOException {
 		Datagram txDgram = new Datagram(0, 0, address, selfAddress, 0x1100, 0, valueIdHash);
