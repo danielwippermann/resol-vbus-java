@@ -38,6 +38,18 @@ TBD
 
 ## Changelog
 
+### 0.5.0 (2020-09-27)
+
+- Add `StreamConnection` class.
+- Add example using serial port.
+
+
+### 0.4.0 (2020-09-08)
+
+- Prepare for release into central Maven repo
+    - Fix tests and documentation
+
+
 ### 0.3.0 (2019-01-16)
 
 - Replace Apache Commons `Hex` class with minimal stub.
