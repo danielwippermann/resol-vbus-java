@@ -99,10 +99,12 @@ public abstract class Connection {
 	 * 
 	 * @param newConnectionState New state to set this connection to.
 	 */
-	protected void setConnectionState(ConnectionState newConnectionState) {
+	protected synchronized void setConnectionState(ConnectionState newConnectionState) {
 		this.connectionState = newConnectionState;
 		
-		for (ConnectionListener listener : listeners) {
+		ConnectionListener[] listenersCopy = listeners.toArray(new ConnectionListener[listeners.size()]);
+
+		for (ConnectionListener listener : listenersCopy) {
 			listener.connectionStateChanged(this);
 		}
 	}
