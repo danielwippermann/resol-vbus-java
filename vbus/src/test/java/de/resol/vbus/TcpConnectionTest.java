@@ -29,6 +29,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -50,7 +51,9 @@ public class TcpConnectionTest {
 		boolean stopped;
 		
 		Socket currentClientSocket;
-		
+
+		InetSocketAddress serverSocketAddress;
+
 		void setup() throws IOException {
 			phase = 18;
 			
@@ -60,6 +63,7 @@ public class TcpConnectionTest {
 //			System.out.println(serverSocket.getLocalPort());
 			
 			this.serverSocket = serverSocket;
+			serverSocketAddress = new InetSocketAddress(InetAddress.getLoopbackAddress(), serverSocket.getLocalPort());
 			
 			thread = new Thread(new Runnable() {
 				
@@ -69,7 +73,7 @@ public class TcpConnectionTest {
 //							System.err.println("Listening for new connection");
 							listenInBackground();
 						} catch (IOException ex) {
-	//						ex.printStackTrace();
+							// ex.printStackTrace();
 						} finally {
 							if (currentClientSocket != null) {
 								try {
@@ -244,7 +248,7 @@ public class TcpConnectionTest {
 			
 			endpoint.phase = phase;
 			
-			TcpConnection testConnection = new TcpConnection(0x0020, endpoint.serverSocket.getLocalSocketAddress(), "via", "password", 1);
+			TcpConnection testConnection = new TcpConnection(0x0020, endpoint.serverSocketAddress, "via", "password", 1);
 	
 			int exceptionCount = 0;
 			try {
@@ -260,7 +264,7 @@ public class TcpConnectionTest {
 		
 		endpoint.phase = 18;
 		
-		final TcpConnection testConnection2 = new TcpConnection(0x0020, endpoint.serverSocket.getLocalSocketAddress(), "via", "password", 1);
+		final TcpConnection testConnection2 = new TcpConnection(0x0020, endpoint.serverSocketAddress, "via", "password", 1);
 		
 		final int[] listenerCallCount = new int [1];
 		
@@ -348,7 +352,7 @@ public class TcpConnectionTest {
 
 		endpoint.setup();
 		
-		final TcpConnection testConnection3 = new TcpConnection(0x0020, endpoint.serverSocket.getLocalSocketAddress(), "via", "password", 1);
+		final TcpConnection testConnection3 = new TcpConnection(0x0020, endpoint.serverSocketAddress, "via", "password", 1);
 		
 		final int[] listenerCallCount3 = new int [1];
 		
@@ -404,7 +408,7 @@ public class TcpConnectionTest {
 		assertEquals(ConnectionState.INTERRUPTED, testConnection3.getConnectionState());
 
 		try {
-			Thread.sleep(1000);
+			Thread.sleep(1500);
 		} catch (InterruptedException ex) {
 			exceptionCount3++;
 		}
@@ -481,7 +485,7 @@ public class TcpConnectionTest {
 		
 		Datagram refDatagram1 = new Datagram(0, 0, 0, 0, 0, 0, 0);
 		
-		final TcpConnection testConnection3 = new TcpConnection(0x0020, endpoint.serverSocket.getLocalSocketAddress(), "via", "password", 1);
+		final TcpConnection testConnection3 = new TcpConnection(0x0020, endpoint.serverSocketAddress, "via", "password", 1);
 		
 		final int[] listenerCallCount3 = new int [1];
 		
