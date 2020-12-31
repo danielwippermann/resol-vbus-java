@@ -245,11 +245,21 @@ public class TcpConnection extends Connection {
 			throw new IOException(errorMessage);
 		}
 
+		Socket previousSocket = this.socket;
+
 		this.socket = socket;
 		this.is = new LiveInputStream(socket.getInputStream(), channel);
 		this.os = new LiveOutputStream(socket.getOutputStream());
 		
 		setConnectionState(ConnectionState.CONNECTED);
+
+		if (previousSocket != null) {
+			try {
+				previousSocket.close();
+			} catch (IOException ex) {
+				// ignore it
+			}
+		}
 	}
 	
 	private void disconnectInternal() throws IOException {
