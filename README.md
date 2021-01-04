@@ -38,6 +38,14 @@ TBD
 
 ## Changelog
 
+### 0.6.0 (2021-01-04)
+
+- Correctly close previous TCP socket on reconnects in `TcpConnection`.
+- Fix some threading issues:
+    - Prevent CME on `Connection#setConnectionState`.
+- Update dependencies.
+
+
 ### 0.5.0 (2020-09-27)
 
 - Add `StreamConnection` class.
