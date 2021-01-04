@@ -33,6 +33,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import org.junit.Test;
 
@@ -356,11 +357,14 @@ public class TcpConnectionTest {
 		
 		final int[] listenerCallCount3 = new int [1];
 		
+		final ArrayList connectionStateHistory = new ArrayList();
+
 		ConnectionListener refListener3 = new ConnectionAdapter() {
 			
 			public void connectionStateChanged(Connection connection) {
 				assertEquals(testConnection3, connection);
 				listenerCallCount3 [0]++;
+				connectionStateHistory.add(connection.getConnectionState());
 			}
 			
 		};
@@ -413,8 +417,9 @@ public class TcpConnectionTest {
 			exceptionCount3++;
 		}
 		
-		assertEquals(8, listenerCallCount3 [0]);
-		assertEquals(ConnectionState.INTERRUPTED, testConnection3.getConnectionState());
+		assertTrue(connectionStateHistory.size() >= 8);
+		assertEquals(ConnectionState.RECONNECTING, connectionStateHistory.get(6));
+		assertEquals(ConnectionState.INTERRUPTED, connectionStateHistory.get(7));
 
 		testConnection3.removeListener(refListener3);
 
