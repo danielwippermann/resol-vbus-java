@@ -211,6 +211,38 @@ public class EmDeviceEmulator extends BaseDeviceEmulator {
 		setResistorValueByNr(nr, Math.round(resistor * 1000));
 	}
 	
+	public void setResistorValueByNrAndBasSettings(int nr, float temperature, int mode) {
+		float temperatureResistor;
+		if (temperature <= -15) {
+			temperatureResistor = 20;
+		} else if (temperature >= 15) {
+			temperatureResistor = 480;
+		} else {
+			temperatureResistor = 250 + temperature / 15 * 210;
+		}
+
+		float modeResistor;
+		switch (mode) {
+		case 1:
+			modeResistor = 36;
+			break;
+		case 2:
+			modeResistor = 620;
+			break;
+		case 3:
+			modeResistor = 1200;
+			break;
+		case 4:
+			modeResistor = 1800;
+			break;
+		default:
+			throw new IllegalArgumentException("Unsupported BAS mode " + mode);
+		}
+
+		float resistor = temperatureResistor + modeResistor;
+		setResistorValueByNr(nr, Math.round(resistor * 1000));
+	}
+
 	private void checkRelayNr(int nr) {
 		if ((nr < 1) || (nr > 5)) {
 			throw new IndexOutOfBoundsException("Relay number must be between 1 and 5");
