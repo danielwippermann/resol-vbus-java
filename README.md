@@ -38,6 +38,11 @@ TBD
 
 ## Changelog
 
+### 0.7.0 (2021-01-23)
+
+- Add `EmDeviceEmulator#setResistorValueByNrAndBasSettings`.
+
+
 ### 0.6.0 (2021-01-04)
 
 - Correctly close previous TCP socket on reconnects in `TcpConnection`.
