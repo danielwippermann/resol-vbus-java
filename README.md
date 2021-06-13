@@ -38,6 +38,11 @@ TBD
 
 ## Changelog
 
+### 0.8.0 (2021-06-13)
+
+- Fix NPE in `Specification#formatText()`.
+
+
 ### 0.7.0 (2021-01-23)
 
 - Add `EmDeviceEmulator#setResistorValueByNrAndBasSettings`.
