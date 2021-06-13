@@ -508,7 +508,7 @@ public class Specification {
 		}
 		
 		public String formatText() {
-			return formatText(null, null, Language.En);
+			return formatText(null, Locale.getDefault(), Language.En);
 		}
 		
 		public boolean isBooleanLikeEnum() {
