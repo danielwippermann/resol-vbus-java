@@ -41,6 +41,11 @@ TBD
 
 ## Changelog
 
+### 0.9.0 (2022-02-12)
+
+- Update VSF file.
+
+
 ### 0.8.0 (2021-06-13)
 
 - Fix NPE in `Specification#formatText()`.
