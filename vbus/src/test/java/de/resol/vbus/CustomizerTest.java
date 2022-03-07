@@ -67,6 +67,14 @@ public class CustomizerTest {
 			return scValuesResult;
 		}
 		
+		@Override
+		protected ConfigurationValue[] setConfigurationInternal(ConfigurationValue[] newValues, ConfigurationValue[] oldValues, boolean optimize) throws IOException {
+			scCallCount++;
+			scNewValuesParam = newValues;
+			scOldValuesParam = oldValues;
+			scOptimizeParam = optimize;
+			return scValuesResult;
+		}		
 	}
 
 	@Test
