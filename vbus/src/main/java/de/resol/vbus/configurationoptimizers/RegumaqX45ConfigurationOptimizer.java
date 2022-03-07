@@ -322,13 +322,6 @@ public class RegumaqX45ConfigurationOptimizer extends BaseConfigurationOptimizer
 	private ConfigurationValue createConfigurationValueDescriptor(String valueId, int valueIndex, int valueIdHash, int priority) {
 		return new ConfigurationValue(valueId, valueIndex, valueIdHash, 0, priority, false, false);
 	}
-	
-	public ConfigurationValue[] setAdjustableValuesWater(int value) {
-		return new ConfigurationValue[] {
-				new ConfigurationValue("WarmwasserTSoll", 0x0037, 0x5fc5f901, value, 0, true, false),
-		};
-	}
-	
 
 	@Override
 	public ConfigurationValue[] generateClockConfiguration(long time, TimeZone timezone) {
