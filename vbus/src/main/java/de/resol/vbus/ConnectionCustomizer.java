@@ -131,6 +131,33 @@ public class ConnectionCustomizer extends Customizer {
 
 		});
 	}
+
+	@Override
+	protected ConfigurationValue[] setConfigurationInternal(final ConfigurationValue[] newValues, final ConfigurationValue[] oldValues, final boolean optimize) throws IOException {
+		return transceiveConfiguration(TransceiveAction.SET, new ConfigurationValueFilter() {
+			
+			public ConfigurationValue[] filterConfigurationValues(ConfigurationValue[] values, int round) {
+				if (optimize) {
+					if (round == 1) {
+						values = ConnectionCustomizer.this.getOptimizer().optimizeSaveConfiguration(newValues, oldValues);
+					} else {
+						values = ConnectionCustomizer.this.getOptimizer().optimizeSaveConfiguration(newValues, values);
+					}
+				} else {
+					if (round == 1) {
+						values = newValues;
+
+						for (int i = 0; i < values.length; i++) {
+							values [i].setPending(true);
+						}
+					}
+				}
+
+				return values;
+			}
+
+		});
+	}
 	
 	public ConfigurationValue[] transceiveConfiguration(TransceiveAction action, ConfigurationValueFilter filter) throws IOException {
 		TransceiveState state = new TransceiveState();

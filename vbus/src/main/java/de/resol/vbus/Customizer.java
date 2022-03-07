@@ -66,6 +66,19 @@ public abstract class Customizer {
 		return saveConfigurationInternal(newValues, oldValues, optimize);
 	}
 	
+	public ConfigurationValue[] setConfiguration(ConfigurationValue[] newValues, ConfigurationValue[] oldValues, boolean optimize) throws IOException {
+		if (optimizer != null) {
+			newValues = optimizer.completeConfiguration(newValues);
+		
+			if (oldValues != null) {
+				oldValues = optimizer.completeConfiguration(oldValues);
+			}
+		}
+		
+		return setConfigurationInternal(newValues, oldValues, optimize);
+	}
+	
+	protected abstract ConfigurationValue[] setConfigurationInternal(ConfigurationValue[] newValues, ConfigurationValue[] oldValues, boolean optimize) throws IOException;
 	protected abstract ConfigurationValue[] saveConfigurationInternal(ConfigurationValue[] newValues, ConfigurationValue[] oldValues, boolean optimize) throws IOException;
 
 }
