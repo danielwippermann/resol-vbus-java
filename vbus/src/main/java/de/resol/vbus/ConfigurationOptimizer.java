@@ -49,7 +49,7 @@ public interface ConfigurationOptimizer {
 
 	/**
 	 * Gets an optimized array of `ConfigurationValue` objects based on what
-	 * values were set in the device befor.
+	 * values were set in the device before.
 	 * 
 	 * @param newValues An array of new `ConfigurationValue` objects to set.
 	 * @param oldValues An array of already set `ConfigurationValue` object.
