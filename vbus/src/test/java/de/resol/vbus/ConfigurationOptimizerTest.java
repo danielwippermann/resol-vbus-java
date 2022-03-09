@@ -65,6 +65,13 @@ public class ConfigurationOptimizerTest {
 			oscOldValuesParam = oldValues;
 			return oscValuesResult;
 		}
+
+		public ConfigurationValue[] optimizeSetConfiguration(ConfigurationValue[] newValues, ConfigurationValue[] oldValues) {
+			oscCallCount++;
+			oscNewValuesParam = newValues;
+			oscOldValuesParam = oldValues;
+			return oscValuesResult;
+		}
 		
 		public ConfigurationValue[] generateClockConfiguration(long time, TimeZone timeZone) {
 			gccCallCount++;

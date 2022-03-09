@@ -56,6 +56,7 @@ public interface ConfigurationOptimizer {
 	 * @return An array of `ConfigurationValue` objects to set next.
 	 */
 	public abstract ConfigurationValue[] optimizeSaveConfiguration(ConfigurationValue[] newValues, ConfigurationValue[] oldValues);
+	public abstract ConfigurationValue[] optimizeSetConfiguration(ConfigurationValue[] newValues, ConfigurationValue[] oldValues);
 
 	/**
 	 * Gets an array of `ConfigurationValue` objects to set the device to

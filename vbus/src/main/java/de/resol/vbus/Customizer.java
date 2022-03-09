@@ -78,7 +78,7 @@ public abstract class Customizer {
 		return setConfigurationInternal(newValues, oldValues, optimize);
 	}
 	
-	protected abstract ConfigurationValue[] setConfigurationInternal(ConfigurationValue[] newValues, ConfigurationValue[] oldValues, boolean optimize) throws IOException;
 	protected abstract ConfigurationValue[] saveConfigurationInternal(ConfigurationValue[] newValues, ConfigurationValue[] oldValues, boolean optimize) throws IOException;
+	protected abstract ConfigurationValue[] setConfigurationInternal(ConfigurationValue[] newValues, ConfigurationValue[] oldValues, boolean optimize) throws IOException;
 
 }

@@ -265,5 +265,119 @@ public class CustomizerTest {
 			assertArrayEquals(customizer.scValuesResult, outputValues);
 		}
 	}
+
+	@Test
+	public void testSetConfiguration() throws Exception {
+		// ---- CASE 1: without optimizer ----
+		if (true) {
+			int deviceAddress = 0x4711;
+
+			TestableCustomizer customizer = new TestableCustomizer(deviceAddress, null);
+
+			ConfigurationValue[] newInputValues = new ConfigurationValue [] {
+				new ConfigurationValue(null, 0, 0x0001, -11, 0, false, false),
+				new ConfigurationValue(null, 0, 0x0002, -22, 0, false, false),
+			};
+	
+			ConfigurationValue[] oldInputValues = new ConfigurationValue [] {
+				new ConfigurationValue(null, 0, 0x0001, -10, 0, false, false),
+				new ConfigurationValue(null, 0, 0x0002, -20, 0, false, false),
+			};
+	
+			customizer.scValuesResult = new ConfigurationValue [] {
+				new ConfigurationValue(null, 0, 0x0001, -1, 0, false, false),
+				new ConfigurationValue(null, 0, 0x0002, -2, 0, false, false),
+			};
+			 
+			ConfigurationValue[] outputValues = customizer.setConfiguration(newInputValues, oldInputValues, true);
+			
+			assertEquals(1, customizer.scCallCount);
+			assertArrayEquals(newInputValues, customizer.scNewValuesParam);
+			assertArrayEquals(oldInputValues, customizer.scOldValuesParam);
+			assertEquals(true, customizer.scOptimizeParam);
+			assertArrayEquals(customizer.scValuesResult, outputValues);
+		}
+		
+		// ---- CASE 2: with optimizer, but without oldValues ----
+		if (true) {
+			int deviceAddress = 0x4711;
+
+			final ConfigurationValue[] newInputValues = new ConfigurationValue [] {
+				new ConfigurationValue(null, 0, 0x0001, -11, 0, false, false),
+				new ConfigurationValue(null, 0, 0x0002, -22, 0, false, false),
+			};
+	
+			TestableConfigurationOptimizer optimizer = new TestableConfigurationOptimizer() {
+				
+				@Override
+				public ConfigurationValue[] completeConfiguration(ConfigurationValue[] values) {
+					super.completeConfiguration(values);
+					
+					return values;
+				}
+				
+			};
+
+			TestableCustomizer customizer = new TestableCustomizer(deviceAddress, optimizer);
+
+			customizer.scValuesResult = new ConfigurationValue [] {
+				new ConfigurationValue(null, 0, 0x0001, -1, 0, false, false),
+				new ConfigurationValue(null, 0, 0x0002, -2, 0, false, false),
+			};
+			 
+			ConfigurationValue[] outputValues = customizer.setConfiguration(newInputValues, null, true);
+			
+			assertEquals(1, optimizer.ccCallCount);
+			
+			assertEquals(1, customizer.scCallCount);
+			assertArrayEquals(newInputValues, customizer.scNewValuesParam);
+			assertArrayEquals(null, customizer.scOldValuesParam);
+			assertEquals(true, customizer.scOptimizeParam);
+			assertArrayEquals(customizer.scValuesResult, outputValues);
+		}
+
+		// ---- CASE 3: with optimizer and oldValues ----
+		if (true) {
+			int deviceAddress = 0x4711;
+
+			final ConfigurationValue[] newInputValues = new ConfigurationValue [] {
+				new ConfigurationValue(null, 0, 0x0001, -11, 0, false, false),
+				new ConfigurationValue(null, 0, 0x0002, -22, 0, false, false),
+			};
+	
+			final ConfigurationValue[] oldInputValues = new ConfigurationValue [] {
+				new ConfigurationValue(null, 0, 0x0001, -10, 0, false, false),
+				new ConfigurationValue(null, 0, 0x0002, -20, 0, false, false),
+			};
+	
+			TestableConfigurationOptimizer optimizer = new TestableConfigurationOptimizer() {
+				
+				@Override
+				public ConfigurationValue[] completeConfiguration(ConfigurationValue[] values) {
+					super.completeConfiguration(values);
+					
+					return values;
+				}
+				
+			};
+
+			TestableCustomizer customizer = new TestableCustomizer(deviceAddress, optimizer);
+
+			customizer.scValuesResult = new ConfigurationValue [] {
+				new ConfigurationValue(null, 0, 0x0001, -1, 0, false, false),
+				new ConfigurationValue(null, 0, 0x0002, -2, 0, false, false),
+			};
+			 
+			ConfigurationValue[] outputValues = customizer.setConfiguration(newInputValues, oldInputValues, true);
+			
+			assertEquals(2, optimizer.ccCallCount);
+			
+			assertEquals(1, customizer.scCallCount);
+			assertArrayEquals(newInputValues, customizer.scNewValuesParam);
+			assertArrayEquals(oldInputValues, customizer.scOldValuesParam);
+			assertEquals(true, customizer.scOptimizeParam);
+			assertArrayEquals(customizer.scValuesResult, outputValues);
+		}
+	}
 	
 }
