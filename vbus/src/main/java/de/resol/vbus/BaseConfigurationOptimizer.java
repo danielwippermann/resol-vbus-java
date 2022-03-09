@@ -112,6 +112,10 @@ public abstract class BaseConfigurationOptimizer implements ConfigurationOptimiz
 	public ConfigurationValue[] optimizeSaveConfiguration(ConfigurationValue[] newValues, ConfigurationValue[] oldValues) {
 		return newValues;
 	}
+
+	public ConfigurationValue[] optimizeSetConfiguration(ConfigurationValue[] newValues, ConfigurationValue[] oldValues) {
+		return newValues;
+	}
 	
 	public ConfigurationValue[] generateClockConfiguration(long time, TimeZone timeZone) {
 		return new ConfigurationValue [0];

@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2008-2016, RESOL - Elektronische Regelungen GmbH.
  * Copyright (C) 2016, Daniel Wippermann.
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
  * "Software"), to deal in the Software without restriction, including
@@ -32,7 +32,7 @@ public final class ConfigurationOptimizerFactory {
 	private ConfigurationOptimizerFactory() {
 		// NOTE(daniel): not constructible
 	}
-	
+
 	private static ConfigurationOptimizerMatcher[] matchers = null;
 
 	private synchronized static ConfigurationOptimizerMatcher[] getMatchers() {
@@ -45,7 +45,7 @@ public final class ConfigurationOptimizerFactory {
 		}
 		return matchers;
 	}
-	
+
 	public static ConfigurationOptimizer matchOptimizer(int deviceAddress, String version, Customizer customizer) {
 		ConfigurationOptimizerMatcher[] matchers = getMatchers();
 
@@ -61,5 +61,5 @@ public final class ConfigurationOptimizerFactory {
 
 		return optimizer;
 	}
-	
+
 }

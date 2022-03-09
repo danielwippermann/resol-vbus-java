@@ -139,9 +139,9 @@ public class ConnectionCustomizer extends Customizer {
 			public ConfigurationValue[] filterConfigurationValues(ConfigurationValue[] values, int round) {
 				if (optimize) {
 					if (round == 1) {
-						values = ConnectionCustomizer.this.getOptimizer().optimizeSaveConfiguration(newValues, oldValues);
+						values = ConnectionCustomizer.this.getOptimizer().optimizeSetConfiguration(newValues, oldValues);
 					} else {
-						values = ConnectionCustomizer.this.getOptimizer().optimizeSaveConfiguration(newValues, values);
+						values = ConnectionCustomizer.this.getOptimizer().optimizeSetConfiguration(newValues, values);
 					}
 				} else {
 					if (round == 1) {
