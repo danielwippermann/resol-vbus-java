@@ -39,6 +39,12 @@ TBD
 
 
 
+## Contributors
+
+- @karolinschlegel
+
+
+
 ## Changelog
 
 ### 0.9.0 (2022-02-12)
