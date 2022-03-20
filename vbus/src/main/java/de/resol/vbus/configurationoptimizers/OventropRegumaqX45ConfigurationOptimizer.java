@@ -31,7 +31,7 @@ import de.resol.vbus.ConfigurationOptimizerMatcher;
 import de.resol.vbus.ConfigurationValue;
 import de.resol.vbus.Customizer;
 
-public class RegumaqX45ConfigurationOptimizer extends BaseConfigurationOptimizer {
+public class OventropRegumaqX45ConfigurationOptimizer extends BaseConfigurationOptimizer {
 
 	@Override
 	public ConfigurationValue[] getAdjustableValues() {
@@ -336,13 +336,7 @@ public class RegumaqX45ConfigurationOptimizer extends BaseConfigurationOptimizer
 
 	@Override
 	public ConfigurationValue[] generateClockConfiguration(long time, TimeZone timezone) {
-		time += timezone.getOffset(time);
-		
-		int value = (int) ((time / 60000) % 1440);
-
-		return new ConfigurationValue[] {
-			new ConfigurationValue("SysTime", 0x0002, 0x17B2C58E, value, 0, true, false),
-		};
+		throw new UnsupportedOperationException("Not yet impemented");
 	}
 	
 	public static ConfigurationOptimizerMatcher getMatcher() {
@@ -350,7 +344,7 @@ public class RegumaqX45ConfigurationOptimizer extends BaseConfigurationOptimizer
 			
 			public ConfigurationOptimizer matchOptimizer(int deviceAddress, String version, Customizer customizer, MatcherState state) {
 				if (deviceAddress == 5682) {
-					return new RegumaqX45ConfigurationOptimizer();
+					return new OventropRegumaqX45ConfigurationOptimizer();
 				} else {
 					return null;
 				}

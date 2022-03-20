@@ -24,7 +24,7 @@
 package de.resol.vbus;
 
 import de.resol.vbus.ConfigurationOptimizerMatcher.MatcherState;
-import de.resol.vbus.configurationoptimizers.RegumaqX45ConfigurationOptimizer;
+import de.resol.vbus.configurationoptimizers.OventropRegumaqX45ConfigurationOptimizer;
 import de.resol.vbus.configurationoptimizers.ResolDeltaSolCsPlusXxxConfigurationOptimizer;
 
 public final class ConfigurationOptimizerFactory {
@@ -39,7 +39,7 @@ public final class ConfigurationOptimizerFactory {
 		if (matchers == null) {
 			matchers = new ConfigurationOptimizerMatcher[] {
 				ResolDeltaSolCsPlusXxxConfigurationOptimizer.getMatcher(),
-				RegumaqX45ConfigurationOptimizer.getMatcher(),
+				OventropRegumaqX45ConfigurationOptimizer.getMatcher(),
 				// NOTE(daniel): add more here...
 			};
 		}
