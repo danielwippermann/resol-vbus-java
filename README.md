@@ -47,6 +47,12 @@ TBD
 
 ## Changelog
 
+### 0.10.0 (2022-03-27)
+
+- Add `OventropRegumaqX45ConfigurationOptimizer`.
+- Add `ConfigurationOptimizer#setConfiguration`.
+
+
 ### 0.9.0 (2022-02-12)
 
 - Update VSF file.
