@@ -50,7 +50,7 @@ public class TcpConnection extends Connection {
 	
 	private String password;
 	
-	private int channel;
+	private Integer channel;
 	
 	private Thread thread;
 	
@@ -70,7 +70,7 @@ public class TcpConnection extends Connection {
 	 * @param password Password to connect to VBus-over-TCP service.
 	 * @param channel VBus channel to connect to.
 	 */
-	public TcpConnection(int selfAddress, SocketAddress socketAddress, String viaTag, String password, int channel) {
+	public TcpConnection(int selfAddress, SocketAddress socketAddress, String viaTag, String password, Integer channel) {
 		super(selfAddress);
 		this.socketAddress = socketAddress;
 		this.viaTag = viaTag;
@@ -211,7 +211,7 @@ public class TcpConnection extends Connection {
 
 		// FIXME(daniel): insert CHANNELLIST command and callback
 
-		if ((errorMessage == null) && (channel != 0)) {
+		if ((errorMessage == null) && (channel != null)) {
 			out.println("CHANNEL " + channel);
 			out.flush();
 			
@@ -248,7 +248,7 @@ public class TcpConnection extends Connection {
 		Socket previousSocket = this.socket;
 
 		this.socket = socket;
-		this.is = new LiveInputStream(socket.getInputStream(), channel);
+		this.is = new LiveInputStream(socket.getInputStream(), (channel != null)?channel:0);
 		this.os = new LiveOutputStream(socket.getOutputStream());
 		
 		setConnectionState(ConnectionState.CONNECTED);
