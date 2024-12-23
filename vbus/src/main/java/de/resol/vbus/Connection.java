@@ -26,6 +26,7 @@ package de.resol.vbus;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * The `Connection` class provides the base functionality for all VBus live
@@ -52,7 +53,7 @@ public abstract class Connection {
 	
 	protected int selfAddress;
 	
-	protected ArrayList<ConnectionListener> listeners;
+	protected List<ConnectionListener> listeners;
 	
 	protected ConnectionState connectionState;
 	
@@ -64,7 +65,7 @@ public abstract class Connection {
 	 */
 	protected Connection(int selfAddress) {
 		this.selfAddress = selfAddress;
-		listeners = (ArrayList<ConnectionListener>) Collections.synchronizedList(new ArrayList<ConnectionListener>());
+		listeners = Collections.synchronizedList(new ArrayList<ConnectionListener>());
 		connectionState = ConnectionState.DISCONNECTED;
 	}
 
