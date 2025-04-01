@@ -42,6 +42,7 @@ TBD
 ## Contributors
 
 - @karolinschlegel
+- @matejkraus
 
 
 
