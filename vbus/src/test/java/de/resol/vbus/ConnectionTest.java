@@ -26,6 +26,7 @@ package de.resol.vbus;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 
@@ -494,6 +495,61 @@ public class ConnectionTest {
 
 		assertTrue(Math.abs(timeDiff) < 20);
 		assertEquals(refHeaders1 [refHeaders1.length - 1], testHeader1);
+	}
+
+	@Test
+	public void testEmitHeaderReceivedWhileListenersAreAddedAndRemoved() throws Exception {
+		final int refCount1 = 100000;
+
+		final TestableConnection testConnection1 = new TestableConnection();
+		testConnection1.addListener(new ConnectionAdapter() {});
+
+		final Packet refPacket1 = new Packet(0, 0, 0x0010, 0x7E11, 0x0100, 1, new byte [4]);
+
+		final AtomicReference<Throwable> refThrowable1 = new AtomicReference<Throwable>();
+
+		// What `transceive` does under every request: register a listener for the reply and
+		// take it away again as soon as the reply has arrived.
+		Thread testThread1 = new Thread(new Runnable() {
+
+			public void run() {
+				for (int i = 0; i < refCount1; i++) {
+					ConnectionListener testListener1 = new ConnectionAdapter() {};
+					testConnection1.addListener(testListener1);
+					testConnection1.removeListener(testListener1);
+				}
+			}
+
+		});
+
+		// And what the connection's own reading thread does meanwhile.
+		Thread testThread2 = new Thread(new Runnable() {
+
+			public void run() {
+				for (int i = 0; i < refCount1; i++) {
+					testConnection1.emitHeaderReceived(refPacket1);
+				}
+			}
+
+		});
+
+		Thread.UncaughtExceptionHandler testHandler1 = new Thread.UncaughtExceptionHandler() {
+
+			public void uncaughtException(Thread thread, Throwable ex) {
+				refThrowable1.compareAndSet(null, ex);
+			}
+
+		};
+
+		testThread1.setUncaughtExceptionHandler(testHandler1);
+		testThread2.setUncaughtExceptionHandler(testHandler1);
+
+		testThread1.start();
+		testThread2.start();
+		testThread1.join();
+		testThread2.join();
+
+		assertNull(String.valueOf(refThrowable1.get()), refThrowable1.get());
 	}
 
 }

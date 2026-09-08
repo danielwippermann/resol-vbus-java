@@ -86,6 +86,21 @@ public abstract class Connection {
 	public void removeListener(ConnectionListener listener) {
 		listeners.remove(listener);
 	}
+	
+	/**
+	 * Takes a snapshot of the listeners to notify.
+	 * 
+	 * Sizing the array from a separate read would not be atomic even against a synchronized
+	 * list: a listener removed between the two calls leaves the array one element longer than
+	 * the list, and `toArray(T[])` is documented to write a null into exactly that slot, which
+	 * the callers would then invoke. Asking for a zero-length array is a single call and is
+	 * always copied to the size the list actually has.
+	 * 
+	 * @return The listeners to notify.
+	 */
+	private ConnectionListener[] copyListeners() {
+		return listeners.toArray(new ConnectionListener[0]);
+	}
 
 	/**
 	 * Get the state of this connection.
@@ -104,7 +119,7 @@ public abstract class Connection {
 	protected synchronized void setConnectionState(ConnectionState newConnectionState) {
 		this.connectionState = newConnectionState;
 		
-		ConnectionListener[] listenersCopy = listeners.toArray(new ConnectionListener[listeners.size()]);
+		ConnectionListener[] listenersCopy = copyListeners();
 
 		for (ConnectionListener listener : listenersCopy) {
 			listener.connectionStateChanged(this);
@@ -159,7 +174,7 @@ public abstract class Connection {
 	}
 
 	protected void emitHeaderReceived(Header header) {
-		ConnectionListener[] listenersCopy = listeners.toArray(new ConnectionListener[listeners.size()]);
+		ConnectionListener[] listenersCopy = copyListeners();
 
 		for (ConnectionListener listener : listenersCopy) {
 			if (header instanceof Packet) {
