@@ -48,6 +48,11 @@ TBD
 
 ## Changelog
 
+### 0.13.0 (2026-10-01)
+
+- Make the read timeout of TcpConnection configurable (#32)
+
+
 ### 0.12.0 (2026-09-08)
 
 - Take the listener snapshot in a single call (#31)
