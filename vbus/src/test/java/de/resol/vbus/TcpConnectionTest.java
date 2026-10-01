@@ -33,6 +33,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
 import org.junit.Test;
@@ -54,6 +55,8 @@ public class TcpConnectionTest {
 		Socket currentClientSocket;
 
 		InetSocketAddress serverSocketAddress;
+
+		boolean silent;
 
 		void setup() throws IOException {
 			phase = 18;
@@ -217,6 +220,19 @@ public class TcpConnectionTest {
 			};
 			
 			while (socket.isConnected()) {
+				if (silent) {
+					// say nothing, but notice the peer going away
+					socket.setSoTimeout(100);
+					try {
+						if (socket.getInputStream().read() < 0) {
+							break;
+						}
+					} catch (SocketTimeoutException ex) {
+						// nop
+					}
+					continue;
+				}
+
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException ex) {
@@ -515,6 +531,70 @@ public class TcpConnectionTest {
 		testConnection3.send(refDatagram1);
 		
 		endpoint.teardown();
+	}
+
+	private static boolean wasInterruptedWithin(Endpoint endpoint, int readTimeout, int millis) throws Exception {
+		TcpConnection testConnection = new TcpConnection(0x0020, endpoint.serverSocketAddress, "via", "password", 1);
+		testConnection.setReadTimeout(readTimeout);
+
+		final boolean[] interrupted = new boolean [1];
+
+		testConnection.addListener(new ConnectionAdapter() {
+
+			public void connectionStateChanged(Connection connection) {
+				if (connection.getConnectionState() == ConnectionState.INTERRUPTED) {
+					interrupted [0] = true;
+				}
+			}
+
+		});
+
+		testConnection.connect();
+		try {
+			long deadline = System.currentTimeMillis() + millis;
+			while (!interrupted [0] && (System.currentTimeMillis() < deadline)) {
+				Thread.sleep(20);
+			}
+		} finally {
+			testConnection.disconnect();
+		}
+
+		return interrupted [0];
+	}
+
+	@Test
+	public void testReadTimeout() throws Exception {
+		TcpConnection testConnection = new TcpConnection(0x0020, null, null, null, null);
+
+		assertEquals(TcpConnection.DEFAULT_READ_TIMEOUT, testConnection.getReadTimeout());
+
+		testConnection.setReadTimeout(30000);
+		assertEquals(30000, testConnection.getReadTimeout());
+
+		int exceptionCount = 0;
+		try {
+			testConnection.setReadTimeout(-1);
+		} catch (IllegalArgumentException ex) {
+			exceptionCount++;
+		}
+
+		assertEquals(1, exceptionCount);
+		assertEquals(30000, testConnection.getReadTimeout());
+
+		// a peer that completes the handshake and then says nothing
+		Endpoint endpoint = new Endpoint();
+		endpoint.silent = true;
+		endpoint.setup();
+
+		try {
+			// a silence longer than the read timeout interrupts the connection...
+			assertTrue(wasInterruptedWithin(endpoint, 200, 2000));
+
+			// ...and the very same silence does not if the timeout allows for it
+			assertFalse(wasInterruptedWithin(endpoint, 5000, 1000));
+		} finally {
+			endpoint.teardown();
+		}
 	}
 
 }
