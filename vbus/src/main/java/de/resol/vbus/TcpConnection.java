@@ -56,6 +56,11 @@ public class TcpConnection extends Connection {
 	 */
 	private static final int HANDSHAKE_TIMEOUT = 5000;
 
+	/**
+	 * How long establishing the TCP connection itself may take, in milliseconds.
+	 */
+	private static final int CONNECT_TIMEOUT = 5500;
+
 	private SocketAddress socketAddress;
 	
 	private String viaTag;
@@ -209,7 +214,7 @@ public class TcpConnection extends Connection {
 	private void connectInternal() throws IOException {
 		Socket socket = new Socket();
 		socket.setSoTimeout(HANDSHAKE_TIMEOUT);
-		socket.connect(socketAddress, 5500);
+		socket.connect(socketAddress, CONNECT_TIMEOUT);
 
 		BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		PrintWriter out = new PrintWriter(socket.getOutputStream());
