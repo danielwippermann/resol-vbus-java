@@ -44,6 +44,23 @@ import java.net.SocketAddress;
  */
 public class TcpConnection extends Connection {
 
+	/**
+	 * The read timeout in milliseconds used unless {@link #setReadTimeout(int)} says otherwise.
+	 */
+	public static final int DEFAULT_READ_TIMEOUT = 5000;
+
+	/**
+	 * How long the peer may take to answer each step of the handshake, in milliseconds.
+	 * It is deliberately independent of the read timeout: a peer is expected to answer
+	 * a command at once, however long a VBus may stay silent afterwards.
+	 */
+	private static final int HANDSHAKE_TIMEOUT = 5000;
+
+	/**
+	 * How long establishing the TCP connection itself may take, in milliseconds.
+	 */
+	private static final int CONNECT_TIMEOUT = 5500;
+
 	private SocketAddress socketAddress;
 	
 	private String viaTag;
@@ -59,6 +76,8 @@ public class TcpConnection extends Connection {
 	private LiveInputStream is;
 	
 	private LiveOutputStream os;
+	
+	private int readTimeout = DEFAULT_READ_TIMEOUT;
 	
 	/**
 	 * Creates a `TcpConnection` instance, initializing its members to the given values.
@@ -76,6 +95,36 @@ public class TcpConnection extends Connection {
 		this.viaTag = viaTag;
 		this.password = password;
 		this.channel = channel;
+	}
+	
+	/**
+	 * Returns how long the connection waits for data before it considers itself interrupted.
+	 * 
+	 * @return Read timeout in milliseconds, `0` meaning that it waits forever.
+	 */
+	public int getReadTimeout() {
+		return readTimeout;
+	}
+	
+	/**
+	 * Sets how long the connection waits for data before it considers itself interrupted
+	 * and reconnects.
+	 * 
+	 * A VBus is not necessarily busy all the time: some controllers pause for several seconds
+	 * between bursts of packets. If such a pause is longer than the read timeout, the connection
+	 * is torn down and established again although nothing is wrong with it, and everything the
+	 * peer sends in the meantime is lost.
+	 * 
+	 * The timeout applies to live data only, not to the handshake, and takes effect the next
+	 * time the connection is established.
+	 * 
+	 * @param readTimeout Read timeout in milliseconds, `0` to wait forever.
+	 */
+	public void setReadTimeout(int readTimeout) {
+		if (readTimeout < 0) {
+			throw new IllegalArgumentException("Read timeout must not be negative");
+		}
+		this.readTimeout = readTimeout;
 	}
 	
 	@Override
@@ -164,8 +213,8 @@ public class TcpConnection extends Connection {
 	
 	private void connectInternal() throws IOException {
 		Socket socket = new Socket();
-		socket.setSoTimeout(5000);
-		socket.connect(socketAddress, 5500);
+		socket.setSoTimeout(HANDSHAKE_TIMEOUT);
+		socket.connect(socketAddress, CONNECT_TIMEOUT);
 
 		BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		PrintWriter out = new PrintWriter(socket.getOutputStream());
@@ -244,6 +293,8 @@ public class TcpConnection extends Connection {
 			
 			throw new IOException(errorMessage);
 		}
+
+		socket.setSoTimeout(readTimeout);
 
 		Socket previousSocket = this.socket;
 
