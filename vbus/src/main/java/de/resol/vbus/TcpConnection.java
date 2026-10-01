@@ -49,6 +49,13 @@ public class TcpConnection extends Connection {
 	 */
 	public static final int DEFAULT_READ_TIMEOUT = 5000;
 
+	/**
+	 * How long the peer may take to answer each step of the handshake, in milliseconds.
+	 * It is deliberately independent of the read timeout: a peer is expected to answer
+	 * a command at once, however long a VBus may stay silent afterwards.
+	 */
+	private static final int HANDSHAKE_TIMEOUT = 5000;
+
 	private SocketAddress socketAddress;
 	
 	private String viaTag;
@@ -201,7 +208,7 @@ public class TcpConnection extends Connection {
 	
 	private void connectInternal() throws IOException {
 		Socket socket = new Socket();
-		socket.setSoTimeout(5000);
+		socket.setSoTimeout(HANDSHAKE_TIMEOUT);
 		socket.connect(socketAddress, 5500);
 
 		BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
